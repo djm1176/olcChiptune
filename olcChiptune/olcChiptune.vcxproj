@@ -26,6 +26,9 @@
     <ClInclude Include="Note.h" />
     <ClInclude Include="olcConsoleGameEngine.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{949496A2-7695-4AB4-BECC-96DA1AE8B10C}</ProjectGuid>

@@ -1,5 +1,6 @@
 #include "olcConsoleGameEngine.h"
 #include <string>
+#include "Note.h"
 
 class Chiptune : public olcConsoleGameEngine {
 
@@ -23,8 +24,8 @@ class Chiptune : public olcConsoleGameEngine {
 	static const int COLOR_LTYELLOW =	14;
 	static const int COLOR_BTWHITE =	15;
 
-	int notes[64][13];
-	int playhead = 0;
+	std::vector<Note *> notes;
+
 
 	int cursor_x = 0;
 	int cursor_y = 0;
@@ -33,6 +34,11 @@ class Chiptune : public olcConsoleGameEngine {
 	// Inherited via olcConsoleGameEngine
 	virtual bool OnUserCreate() override
 	{
+
+		for (int i = 0; i < 4; i++) {
+			notes.push_back(new Note{});
+		}
+
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override
@@ -41,6 +47,34 @@ class Chiptune : public olcConsoleGameEngine {
 
 		//Display
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ');
+
+		//Draw cursor
+		//If over taskbar...
+		if (m_mousePosY == 0) {
+			DrawLine((m_mousePosX / 9) * 9, 0, (m_mousePosX / 9) * 9 + TASKBAR_NAMES[m_mousePosX / 9].length() - 1, 0, PIXEL_SOLID, COLOR_LTBLUE);
+		} else if (m_mousePosX > 8 && m_mousePosX < ScreenWidth() - 1 && m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) {
+			//Draw inside piano roll
+			if (m_mousePosX > 14 && m_mousePosX < 17) {
+				//One of the note's pitches
+				DrawLine(m_mousePosX - (m_mousePosX + 1) % 2, m_mousePosY, m_mousePosX + m_mousePosX % 2, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
+			}
+			else if (m_mousePosX > 19 && m_mousePosX < 22) {
+				//One of the note's octaves
+				DrawLine(m_mousePosX - m_mousePosX % 2, m_mousePosY, m_mousePosX + (m_mousePosX + 1) % 2, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
+			}
+			else if (m_mousePosX > 24 && m_mousePosX < 28) {
+				//One of the note's volumes
+				DrawLine(m_mousePosX - (m_mousePosX + 1) % 2, m_mousePosY, 1 + m_mousePosX + m_mousePosX % 2, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
+			}
+			else if (true) {
+				//Everything else as of right now
+				Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, COLOR_GRAY);
+			}
+		}
+		else if (true) {
+			//Everything else as of right now
+			Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, COLOR_WHITE);
+		}
 
 		//Draw Taskbar buttons
 		for (int i = 0; i < TASKBAR_COUNT; i++) {
@@ -54,26 +88,18 @@ class Chiptune : public olcConsoleGameEngine {
 		DrawLine(0, ScreenHeight() - 1, ScreenWidth(), ScreenHeight() - 1, PIXEL_SOLID, 2);
 		DrawLine(ScreenWidth() - 1, 3, ScreenWidth() - 1, ScreenHeight() - 2, PIXEL_SOLID, 2);
 
-		//Draw cursor
-		//If over taskbar...
-		if (m_mousePosY == 0) {
-			DrawLine((m_mousePosX / 9) * 9, 0, (m_mousePosX / 9) * 9 + TASKBAR_NAMES[m_mousePosX / 9].length() - 1, 0, PIXEL_SOLID, COLOR_LTBLUE);
-		} else if (m_mousePosX > 8 && m_mousePosX < ScreenWidth() - 1 && m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) {
-			//Draw inside piano roll
-			Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, COLOR_GRAY);
-		}
-		else if (true) {
-			//Everything else as of right now
-			//Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, COLOR_LTRED);
-		}
-
 		//Draw notes
-		//for (int x = 0; x < 32; x++) {
-			//for (int y = 0; y < 13; y++) {
-				//Draw note at (x, y) of the array, looping if necessary
-				
-			//}
-		//}
+		for (int i = 0; i < notes.size(); i++) {
+			DrawString(9, i + 6, std::to_wstring(i) + L" .. ");
+			DrawString(13, i + 6, L"[" + std::to_wstring(i) + L"]", (m_mousePosX > 14 && m_mousePosX < 17 ? 0x0017 : 0x0007));
+			DrawString(18, i + 6, L"[" + notes[i]->GetPitchStr(Flats) + L"]", (m_mousePosX > 19 && m_mousePosX < 22 ? 0x0017 : 0x0007));
+			DrawString(23, i + 6, L"[" + notes[i]->GetOctaveStr() + L"]", (m_mousePosX > 24 && m_mousePosX < 28 ? 0x0017 : 0x0007));
+		}
+			DrawString(9, 11, std::to_wstring(0) + L" .. [" + notes[0]->GetPitchStr(Flats) + L"] [" + notes[0]->GetOctaveStr() + L"] [" + notes[0]->GetVolumeStr() + L"]");
+
+		
+
+
 
 		return true;
 	}

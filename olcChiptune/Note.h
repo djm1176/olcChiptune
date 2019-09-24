@@ -4,13 +4,20 @@
 
 #include <string>
 
+enum Accidentals { Flats, Sharps };
 class Note {
 
 public:
 	int GetVolume();
 	int GetPitch();
-	std::wstring GetPitchStr();
-	explicit Note(int volume = 100, int pitch = 0);
+	int GetOctave();
+	std::wstring GetVolumeStr();
+	std::wstring GetPitchStr(Accidentals accidentals);
+	std::wstring GetOctaveStr();
+
+	void OffsetPitch(int amount);
+
+	explicit Note(int volume = 0, int pitch = 1);
 	~Note();
 	Note(const Note& other);
 	Note(Note&& other);
@@ -21,6 +28,10 @@ private:
 	int *m_Volume;
 	int *m_Pitch;
 
+	bool SetPitch(int amount);
+	bool SetVolume(int amount);
+	bool SetOctave(int amount);
+	int GetOctavePitch();
 
 };
 
