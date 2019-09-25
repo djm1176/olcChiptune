@@ -5,6 +5,7 @@
 #include <string>
 
 enum Accidentals { Flats, Sharps };
+
 class Note {
 
 public:

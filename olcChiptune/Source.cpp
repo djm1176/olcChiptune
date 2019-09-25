@@ -4,6 +4,8 @@
 
 class Chiptune : public olcConsoleGameEngine {
 
+	std::wstring PadInt(int num, int placesCount);
+
 	static const int TASKBAR_COUNT = 4;
 	std::wstring TASKBAR_NAMES[TASKBAR_COUNT]{L"File", L"Edit", L"Project", L"Help"};
 	
@@ -56,15 +58,15 @@ class Chiptune : public olcConsoleGameEngine {
 			//Draw inside piano roll
 			if (m_mousePosX > 14 && m_mousePosX < 17) {
 				//One of the note's pitches
-				DrawLine(m_mousePosX - (m_mousePosX + 1) % 2, m_mousePosY, m_mousePosX + m_mousePosX % 2, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
+				DrawLine(15, m_mousePosY, 16, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
 			}
 			else if (m_mousePosX > 19 && m_mousePosX < 22) {
 				//One of the note's octaves
-				DrawLine(m_mousePosX - m_mousePosX % 2, m_mousePosY, m_mousePosX + (m_mousePosX + 1) % 2, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
+				DrawLine(20, m_mousePosY, 21, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
 			}
 			else if (m_mousePosX > 24 && m_mousePosX < 28) {
 				//One of the note's volumes
-				DrawLine(m_mousePosX - (m_mousePosX + 1) % 2, m_mousePosY, 1 + m_mousePosX + m_mousePosX % 2, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
+				DrawLine(25, m_mousePosY, 27, m_mousePosY, PIXEL_SOLID, COLOR_BLUE);
 			}
 			else if (true) {
 				//Everything else as of right now
@@ -88,14 +90,14 @@ class Chiptune : public olcConsoleGameEngine {
 		DrawLine(0, ScreenHeight() - 1, ScreenWidth(), ScreenHeight() - 1, PIXEL_SOLID, 2);
 		DrawLine(ScreenWidth() - 1, 3, ScreenWidth() - 1, ScreenHeight() - 2, PIXEL_SOLID, 2);
 
+		DrawString(9, 3, L"Pos  Pit  Oct  Vol");
 		//Draw notes
 		for (int i = 0; i < notes.size(); i++) {
-			DrawString(9, i + 6, std::to_wstring(i) + L" .. ");
-			DrawString(13, i + 6, L"[" + std::to_wstring(i) + L"]", (m_mousePosX > 14 && m_mousePosX < 17 ? 0x0017 : 0x0007));
-			DrawString(18, i + 6, L"[" + notes[i]->GetPitchStr(Flats) + L"]", (m_mousePosX > 19 && m_mousePosX < 22 ? 0x0017 : 0x0007));
-			DrawString(23, i + 6, L"[" + notes[i]->GetOctaveStr() + L"]", (m_mousePosX > 24 && m_mousePosX < 28 ? 0x0017 : 0x0007));
+			DrawString(9, i + 4, PadInt(i, 3));
+			DrawString(14, i + 4, L"[" + notes[i]->GetPitchStr(Flats) + L"]", (m_mousePosY == i + 4 && m_mousePosX > 14 && m_mousePosX < 17 ? 0x0017 : 0x0007));
+			DrawString(19, i + 4, L"[" + notes[i]->GetOctaveStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 19 && m_mousePosX < 22 ? 0x0017 : 0x0007));
+			DrawString(24, i + 4, L"[" + notes[i]->GetVolumeStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 24 && m_mousePosX < 28 ? 0x0017 : 0x0007));
 		}
-			DrawString(9, 11, std::to_wstring(0) + L" .. [" + notes[0]->GetPitchStr(Flats) + L"] [" + notes[0]->GetOctaveStr() + L"] [" + notes[0]->GetVolumeStr() + L"]");
 
 		
 
@@ -114,4 +116,26 @@ int main() {
 	game.Start();
 
 	return 0;
+}
+
+std::wstring Chiptune::PadInt(int num, int placesCount) {
+	switch (placesCount) {
+	case 1:
+		if (num < 10) return std::to_wstring(num);
+		else return L"9";
+		break;
+	case 2:
+		if (num < 10) return L"0" + std::to_wstring(num);
+		else if (num < 100) return std::to_wstring(num);
+		else return L"99";
+		break;
+	case 3:
+		if (num < 10) return L"00" + std::to_wstring(num);
+		else if (num < 100) return L"0" + std::to_wstring(num);
+		else if (num < 1000) return std::to_wstring(num);
+		else return L"999";
+		break;
+	default:
+		return std::to_wstring(num);
+	}
 }
