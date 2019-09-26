@@ -4,7 +4,8 @@
 
 class Chiptune : public olcConsoleGameEngine {
 
-	std::wstring PadInt(int num, int placesCount);
+	//std::wstring PadInt(int num, int placesCount);
+	//bool OffsetPlayhead(int amount);
 
 	static const int TASKBAR_COUNT = 4;
 	std::wstring TASKBAR_NAMES[TASKBAR_COUNT]{L"File", L"Edit", L"Project", L"Help"};
@@ -31,13 +32,18 @@ class Chiptune : public olcConsoleGameEngine {
 
 	int cursor_x = 0;
 	int cursor_y = 0;
+	int playhead = 0;
+
+	//TDOO: Create a data structure for multiple of these
+	float wait_target = 1.0f / 30.0f; //30 fps target
+	float wait_counter = 0.0f; //Don't do anything when less than wait_target
 
 
 	// Inherited via olcConsoleGameEngine
 	virtual bool OnUserCreate() override
 	{
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 64; i++) {
 			notes.push_back(new Note{});
 		}
 
@@ -45,7 +51,15 @@ class Chiptune : public olcConsoleGameEngine {
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override
 	{
-
+		
+		if (m_keys[VK_NEXT].bHeld && wait_counter >= wait_target) {
+			OffsetPlayhead(1);
+			wait_counter = 0.0f;
+		}
+		else if (m_keys[VK_PRIOR].bHeld && wait_counter >= wait_target) {
+			OffsetPlayhead(-1);
+			wait_counter = 0.0f;
+		}
 
 		//Display
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ');
@@ -92,18 +106,45 @@ class Chiptune : public olcConsoleGameEngine {
 
 		DrawString(9, 3, L"Pos  Pit  Oct  Vol");
 		//Draw notes
-		for (int i = 0; i < notes.size(); i++) {
-			DrawString(9, i + 4, PadInt(i, 3));
-			DrawString(14, i + 4, L"[" + notes[i]->GetPitchStr(Flats) + L"]", (m_mousePosY == i + 4 && m_mousePosX > 14 && m_mousePosX < 17 ? 0x0017 : 0x0007));
-			DrawString(19, i + 4, L"[" + notes[i]->GetOctaveStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 19 && m_mousePosX < 22 ? 0x0017 : 0x0007));
-			DrawString(24, i + 4, L"[" + notes[i]->GetVolumeStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 24 && m_mousePosX < 28 ? 0x0017 : 0x0007));
+		for (int i = playhead; i < playhead + min(notes.size() - playhead, ScreenHeight() - 9); i++) {
+			DrawString(9, i - playhead + 4, PadInt(i, 3));
+			DrawString(14, i - playhead + 4, L"[" + notes[i]->GetPitchStr(Flats) + L"]", (m_mousePosY == i + 4 && m_mousePosX > 14 && m_mousePosX < 17 ? 0x0017 : 0x0007));
+			DrawString(19, i - playhead + 4, L"[" + notes[i]->GetOctaveStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 19 && m_mousePosX < 22 ? 0x0017 : 0x0007));
+			DrawString(24, i - playhead + 4, L"[" + notes[i]->GetVolumeStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 24 && m_mousePosX < 28 ? 0x0017 : 0x0007));
 		}
 
-		
-
-
+		wait_counter += fElapsedTime;
 
 		return true;
+	}
+
+	//This is the ONLY way that playhead should be modified
+	bool OffsetPlayhead(int amount) {
+		if (playhead + amount < 0) return false;
+		if (playhead + amount > notes.size() - 1) return false;
+		playhead += amount;
+	}
+
+	static std::wstring PadInt(int num, int placesCount) {
+		switch (placesCount) {
+		case 1:
+			if (num < 10) return std::to_wstring(num);
+			else return L"9";
+			break;
+		case 2:
+			if (num < 10) return L"0" + std::to_wstring(num);
+			else if (num < 100) return std::to_wstring(num);
+			else return L"99";
+			break;
+		case 3:
+			if (num < 10) return L"00" + std::to_wstring(num);
+			else if (num < 100) return L"0" + std::to_wstring(num);
+			else if (num < 1000) return std::to_wstring(num);
+			else return L"999";
+			break;
+		default:
+			return std::to_wstring(num);
+		}
 	}
 };
 
@@ -116,26 +157,4 @@ int main() {
 	game.Start();
 
 	return 0;
-}
-
-std::wstring Chiptune::PadInt(int num, int placesCount) {
-	switch (placesCount) {
-	case 1:
-		if (num < 10) return std::to_wstring(num);
-		else return L"9";
-		break;
-	case 2:
-		if (num < 10) return L"0" + std::to_wstring(num);
-		else if (num < 100) return std::to_wstring(num);
-		else return L"99";
-		break;
-	case 3:
-		if (num < 10) return L"00" + std::to_wstring(num);
-		else if (num < 100) return L"0" + std::to_wstring(num);
-		else if (num < 1000) return std::to_wstring(num);
-		else return L"999";
-		break;
-	default:
-		return std::to_wstring(num);
-	}
 }
