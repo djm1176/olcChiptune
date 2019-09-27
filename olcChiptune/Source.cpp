@@ -51,7 +51,9 @@ class Chiptune : public olcConsoleGameEngine {
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override
 	{
-		
+
+		//Input Detection
+		//Scroll up/down
 		if (m_keys[VK_NEXT].bHeld && wait_counter >= wait_target) {
 			OffsetPlayhead(1);
 			wait_counter = 0.0f;
@@ -60,6 +62,13 @@ class Chiptune : public olcConsoleGameEngine {
 			OffsetPlayhead(-1);
 			wait_counter = 0.0f;
 		}
+
+		//Mouse manipulation
+		if (m_mouse[0].bPressed) {
+			//Check if we clicked on a note...
+			if()
+		}
+
 
 		//Display
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ');
@@ -104,13 +113,9 @@ class Chiptune : public olcConsoleGameEngine {
 		DrawLine(0, ScreenHeight() - 1, ScreenWidth(), ScreenHeight() - 1, PIXEL_SOLID, 2);
 		DrawLine(ScreenWidth() - 1, 3, ScreenWidth() - 1, ScreenHeight() - 2, PIXEL_SOLID, 2);
 
-		DrawString(9, 3, L"Pos  Pit  Oct  Vol");
-		//Draw notes
-		for (int i = playhead; i < playhead + min(notes.size() - playhead, ScreenHeight() - 9); i++) {
-			DrawString(9, i - playhead + 4, PadInt(i, 3));
-			DrawString(14, i - playhead + 4, L"[" + notes[i]->GetPitchStr(Flats) + L"]", (m_mousePosY == i + 4 && m_mousePosX > 14 && m_mousePosX < 17 ? 0x0017 : 0x0007));
-			DrawString(19, i - playhead + 4, L"[" + notes[i]->GetOctaveStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 19 && m_mousePosX < 22 ? 0x0017 : 0x0007));
-			DrawString(24, i - playhead + 4, L"[" + notes[i]->GetVolumeStr() + L"]", (m_mousePosY == i + 4 && m_mousePosX > 24 && m_mousePosX < 28 ? 0x0017 : 0x0007));
+		//Draw piano roll labels
+		for (int i = playhead; i < playhead + min(MAX_PITCH - playhead, ScreenHeight() - 9); i++) {
+			DrawString(9, i - playhead + 4, L"[" + PITCH_FLATS[i % 12] + L" ]", (m_mousePosY == i + 4 ? 0x0017 : 0x0007));
 		}
 
 		wait_counter += fElapsedTime;

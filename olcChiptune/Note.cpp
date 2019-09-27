@@ -1,6 +1,5 @@
 #include "Note.h"
 
-
 //#########################
 //Constructors/Destructor
 //#########################
@@ -56,9 +55,6 @@ int Note::GetOctavePitch() {
 }
 
 std::wstring Note::GetPitchStr(Accidentals accidentals) {
-	static std::wstring PITCH_FLATS[]	{ L"A ", L"Bb", L"B ", L"C ", L"Db", L"D ", L"Eb", L"E ", L"F ", L"Gb", L"G ", L"Ab"};
-	static std::wstring PITCH_SHARPS[]	{ L"A ", L"A#", L"B ", L"C ", L"C#",L"D ", L"D#", L"E ", L"F ", L"F#", L"G ", L"G#"};
-	
 	return (*m_Volume > 0 ? (accidentals == Flats ? PITCH_FLATS[GetOctavePitch()] : PITCH_SHARPS[GetOctavePitch()]) : L"  ");
 }
 
