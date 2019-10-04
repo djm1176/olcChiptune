@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Beat.cpp" />
     <ClCompile Include="Note.cpp" />
+    <ClCompile Include="Page.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>

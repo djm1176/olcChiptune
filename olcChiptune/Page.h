@@ -6,6 +6,7 @@
 
 class Page {
 public:
+	Page();
 	~Page();
 	std::vector<Note*> getBeat(int index);
 
