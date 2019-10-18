@@ -7,19 +7,13 @@
 class Beat {
 public:
 	Beat();
-	~Beat();
-	Beat(const Note& other);
-	Beat(Beat&& other);
-	Beat& operator=(const Beat& rhs);
-	Beat& operator=(Beat&& rhs);
-
-	Note getNote(int index);
+	
+	const std::vector<Note> &getNotes(); //TODO: If adding more properties, we need to return by non-const reference so we can modify
 	bool addNote(int pitch);
-	bool removeNote(int pitch);
+	void removeNote(int pitch);
 
 private:
-	std::vector<Note*> *notes;
-
+	std::vector<Note> notes;
 
 };
 

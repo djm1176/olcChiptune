@@ -1,19 +1,21 @@
 #ifndef OLCPAGE_H
 #define OLCPAGE_H
 
-#include "Note.h"
+#include "Beat.h"
 #include <vector>
 
 class Page {
 public:
+	static const int PAGE_BEATS = 64; 
+	
 	Page();
-	~Page();
-	std::vector<Note*> getBeat(int index);
+	Beat& getBeat(int time);
 
+	
 
 
 private:
-	std::vector<Note*> beats[32];
+	Beat beats[];
 
 
 };
