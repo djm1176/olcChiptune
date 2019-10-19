@@ -2,19 +2,25 @@
 #include "Beat.h"
 #include "Note.h"
 
-Beat::Beat() {
-	//notes = std::vector<Note>();
+Beat::Beat() : notes{std::vector<Note>()} {
 }
 
 bool Beat::addNote(int pitch) {
-	//Create a note if we can
-	for (Note n : notes) {
-		if (n.getPitch() == pitch) return false;
-		else {
-			Note newNote = Note(pitch);
-			notes.push_back(newNote);
-			
-			return true;
+	//If there's no notes...
+	if (notes.size() == 0) {
+		Note newNote = Note(pitch);
+		notes.push_back(newNote);
+		return true;
+	}
+	else {
+		//Create a note if we can
+		for (Note n : notes) {
+			if (n.getPitch() == pitch) return false;
+			else {
+				Note newNote = Note(pitch);
+				notes.push_back(newNote);
+				return true;
+			}
 		}
 	}
 }

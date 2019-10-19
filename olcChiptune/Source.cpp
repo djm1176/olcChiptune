@@ -1,6 +1,7 @@
 #include "olcConsoleGameEngine.h"
 #include <string>
 #include "Page.h"
+#include "Characters.h"
 
 class Chiptune : public olcConsoleGameEngine {
 
@@ -27,9 +28,6 @@ class Chiptune : public olcConsoleGameEngine {
 	static const int COLOR_LTYELLOW =	14;
 	static const int COLOR_BTWHITE =	15;
 
-	std::vector<Note *> notes;
-
-
 	int cursor_x = 0;
 	int cursor_y = 0;
 	int playhead = 0;
@@ -48,16 +46,14 @@ class Chiptune : public olcConsoleGameEngine {
 		
 		return true;
 	}
-	virtual bool OnUserUpdate(float fElapsedTime) override
-	{
-		for (int i = 0; i < Page::PAGE_BEATS; i++) {
-			for (Note n : myPage->getBeat(i).getNotes()) {
-				//std::cout << n.getPitch() << std::endl;
-				DrawString(0, i, std::to_wstring(n.getPitch()), 0x007F);
-			}
-		}
+	virtual bool OnUserUpdate(float fElapsedTime) override {
 
-		return false;
+		//Draw a test box or two :)
+
+		BoxDrawing::DrawBox(*this, 10, 10, 30, 40, BoxDrawing::BoxType::Line, 0x000F);
+		BoxDrawing::DrawBox(*this, 50, 10, 70, 40, BoxDrawing::BoxType::Pipe, 0x000F);
+
+		return true;
 	}
 };
 
@@ -66,7 +62,7 @@ int main() {
 
 	Chiptune game;
 
-	game.ConstructConsole(128, 64, 12, 12);
+	game.ConstructConsole(128, 64, 8, 8);
 	game.Start();
 
 	return 0;

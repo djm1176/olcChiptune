@@ -11,12 +11,9 @@ public:
 	Page();
 	Beat& getBeat(int time);
 
-	
-
 
 private:
-	Beat beats[];
-
+	std::vector<Beat> beats;
 
 };
 
