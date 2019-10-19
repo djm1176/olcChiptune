@@ -23,6 +23,7 @@
     <ClCompile Include="Note.cpp" />
     <ClCompile Include="Page.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Tune.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Beat.h" />
@@ -30,6 +31,7 @@
     <ClInclude Include="Note.h" />
     <ClInclude Include="olcConsoleGameEngine.h" />
     <ClInclude Include="Page.h" />
+    <ClInclude Include="Tune.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

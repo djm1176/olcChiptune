@@ -6,10 +6,10 @@
 
 class Page {
 public:
-	static const int PAGE_BEATS = 64; 
+	static const int PAGE_BEATS = 16; 
 	
 	Page();
-	Beat& getBeat(int time);
+	std::vector<Beat>& getBeats();
 
 
 private:

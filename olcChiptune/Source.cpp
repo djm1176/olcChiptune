@@ -1,6 +1,6 @@
 #include "olcConsoleGameEngine.h"
 #include <string>
-#include "Page.h"
+#include "Tune.h"
 #include "Characters.h"
 
 class Chiptune : public olcConsoleGameEngine {
@@ -36,22 +36,26 @@ class Chiptune : public olcConsoleGameEngine {
 	float wait_target = 1.0f / 30.0f; //30 fps target
 	float wait_counter = 0.0f; //Don't do anything when less than wait_target
 
-	Page* myPage;
+	Tune* tune;
 
 	// Inherited via olcConsoleGameEngine
 	virtual bool OnUserCreate() override
 	{
-		myPage = new Page();
-		myPage->getBeat(0).addNote(40);
+		tune = new Tune();
+		tune->getPages().at(0).getBeats().at(0).addNote(10);
 		
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
 
-		//Draw a test box or two :)
-
-		BoxDrawing::DrawBox(*this, 10, 10, 30, 40, BoxDrawing::BoxType::Line, 0x000F);
-		BoxDrawing::DrawBox(*this, 50, 10, 70, 40, BoxDrawing::BoxType::Pipe, 0x000F);
+		//Draw all the notes that can be drawn on screen
+		for (Page page : tune->getPages()) {
+			for (int beat = 0; beat < page.getBeats().size(); beat++) {
+				for (Note note : page.getBeats().at(beat).getNotes()) {
+					Draw(beat, note.getPitch(), PIXEL_SOLID, 0x000E);
+				}
+			}
+		}
 
 		return true;
 	}
@@ -62,7 +66,7 @@ int main() {
 
 	Chiptune game;
 
-	game.ConstructConsole(128, 64, 8, 8);
+	game.ConstructConsole(64, 32, 16, 16);
 	game.Start();
 
 	return 0;
