@@ -42,8 +42,8 @@ class Chiptune : public olcConsoleGameEngine {
 	virtual bool OnUserCreate() override
 	{
 		tune = new Tune();
-		tune->getPages().at(0).getBeats().at(0).addNote(10);
-		
+		tune->getPages().at(0).getBeats().at(0).addNote(15);
+		tune->getPages().at(0).getBeats().at(0).addNote(18);
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
