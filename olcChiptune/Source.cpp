@@ -36,28 +36,19 @@ class Chiptune : public olcConsoleGameEngine {
 	float wait_target = 1.0f / 30.0f; //30 fps target
 	float wait_counter = 0.0f; //Don't do anything when less than wait_target
 
-	Tune* tune;
-
 	// Inherited via olcConsoleGameEngine
 	virtual bool OnUserCreate() override
 	{
-		tune = new Tune();
-		tune->getPages().at(0).getBeats().at(0).addNote(15);
-		tune->getPages().at(0).getBeats().at(0).addNote(18);
+		EnableSound();
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
 
-		//Draw all the notes that can be drawn on screen
-		for (Page page : tune->getPages()) {
-			for (int beat = 0; beat < page.getBeats().size(); beat++) {
-				for (Note note : page.getBeats().at(beat).getNotes()) {
-					Draw(beat, note.getPitch(), PIXEL_SOLID, 0x000E);
-				}
-			}
-		}
-
 		return true;
+	}
+
+	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep) {
+		return sinf(440.0f * 2.0f * 3.14159f * fGlobalTime) * 0.5f;
 	}
 };
 

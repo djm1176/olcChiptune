@@ -4,14 +4,12 @@
 
 Beat::Beat() : notes{std::vector<Note>()} {}
 
-Note aNote;
 
 bool Beat::addNote(int pitch) {
 	//If there's no notes...
 	if (notes.size() == 0) {
 		Note newNote = Note(pitch);
 		notes.push_back(newNote);
-		aNote = newNote;
 		return true;
 	}
 	else {
