@@ -34,6 +34,6 @@ void Beat::removeNote(int pitch) {
 	}
 }
 
-const std::vector<Note>& Beat::getNotes() {
+std::vector<Note>& Beat::getNotes() {
 	return notes;
 }

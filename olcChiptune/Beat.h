@@ -8,7 +8,7 @@ class Beat {
 public:
 	Beat();
 	
-	const std::vector<Note> &getNotes(); //TODO: If adding more properties, we need to return by non-const reference so we can modify
+	std::vector<Note> &getNotes(); //TODO: If adding more properties, we need to return by non-const reference so we can modify
 	bool addNote(int pitch);
 	void removeNote(int pitch);
 

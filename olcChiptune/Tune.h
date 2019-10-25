@@ -48,7 +48,7 @@ public:
 	/// Get all pages contained in this Tune.
 	/// </summary>
 	/// <returns>An std vector of Pages.</returns>
-	std::vector<Page> getPages();
+	std::vector<Page>& getPages();
 
 private:
 	std::vector<Page> pages;

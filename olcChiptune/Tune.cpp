@@ -18,6 +18,6 @@ bool Tune::save(std::string filename, bool overwrite) {
 	return false;
 }
 
-std::vector<Page> Tune::getPages() {
+std::vector<Page>& Tune::getPages() {
 	return pages;
 }

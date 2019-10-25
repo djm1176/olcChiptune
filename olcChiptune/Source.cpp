@@ -36,10 +36,20 @@ class Chiptune : public olcConsoleGameEngine {
 	float wait_target = 1.0f / 30.0f; //30 fps target
 	float wait_counter = 0.0f; //Don't do anything when less than wait_target
 
+	Tune* myTune;
+
 	// Inherited via olcConsoleGameEngine
 	virtual bool OnUserCreate() override
 	{
+		myTune = new Tune();
+		myTune->getPages().at(0).getBeats().at(0).addNote(20);
+		myTune->getPages().at(0).getBeats().at(0).addNote(30);
+		myTune->getPages().at(0).getBeats().at(0).addNote(40);
+		myTune->getPages().at(0).getBeats().at(0).addNote(50);
+		//myTune->addNote(0, 0, 20);
 		EnableSound();
+
+
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
@@ -48,10 +58,9 @@ class Chiptune : public olcConsoleGameEngine {
 	}
 
 	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep) {
-		return sinf(440.0f * 2.0f * 3.14159f * fGlobalTime) * 0.5f;
+		return sinf(440.0 * 3.14159f * 2.0 * fGlobalTime) * 0.5f;
 	}
 };
-
 
 int main() {
 
