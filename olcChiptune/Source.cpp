@@ -57,8 +57,26 @@ class Chiptune : public olcConsoleGameEngine {
 		return true;
 	}
 
+	static float pitchToSin(int pitch, float fGlobalTime, float amplitude) {
+		static const float freqs[]{27.500, 29.1353, 30.8677, 32.7032, 34.6479, 36.7081, 38.8909, 41.2035, 43.6536, 46.2493, 48.9995, 51.9130};
+
+		return sinf(freqs[pitch % 12] * ((pitch / 12) + 1) * 3.14159f * 2.0 * fGlobalTime) > 0 ? 1.0 * amplitude : -1.0 * amplitude;
+
+	}
+
 	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep) {
-		return sinf(440.0 * 3.14159f * 2.0 * fGlobalTime) * 0.5f;
+		float final = 0.0f;
+		float amplitude = 0.1f;
+
+		if ((int)fGlobalTime % 2 == 0) {
+			final += pitchToSin(40, fGlobalTime, 0.1f);
+			final += pitchToSin(44, fGlobalTime, 0.1f);
+			final += pitchToSin(47, fGlobalTime, 0.1f);
+			final += pitchToSin(52, fGlobalTime, 0.1f);
+		}
+
+
+		return final;
 	}
 };
 
