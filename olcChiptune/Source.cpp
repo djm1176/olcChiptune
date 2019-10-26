@@ -33,8 +33,10 @@ class Chiptune : public olcConsoleGameEngine {
 	int playhead = 0;
 
 	//TDOO: Create a data structure for multiple of these
-	float wait_target = 1.0f / 30.0f; //30 fps target
-	float wait_counter = 0.0f; //Don't do anything when less than wait_target
+	float tempo_target = 60.0f / 120.0f;
+	float tempo_current = 0.0f;
+
+	bool isPlaying = false;
 
 	Tune* myTune;
 
@@ -42,39 +44,75 @@ class Chiptune : public olcConsoleGameEngine {
 	virtual bool OnUserCreate() override
 	{
 		myTune = new Tune();
-		myTune->getPages().at(0).getBeats().at(0).addNote(20);
-		myTune->getPages().at(0).getBeats().at(0).addNote(30);
-		myTune->getPages().at(0).getBeats().at(0).addNote(40);
-		myTune->getPages().at(0).getBeats().at(0).addNote(50);
-		//myTune->addNote(0, 0, 20);
-		EnableSound();
 
+		myTune->getPages().at(0).getBeats().at(0).addNote(44);
+		myTune->getPages().at(0).getBeats().at(1).addNote(42);
+		myTune->getPages().at(0).getBeats().at(2).addNote(40);
+		myTune->getPages().at(0).getBeats().at(3).addNote(42);
+		myTune->getPages().at(0).getBeats().at(4).addNote(44);
+		myTune->getPages().at(0).getBeats().at(5).addNote(44);
+		myTune->getPages().at(0).getBeats().at(6).addNote(44);
+		myTune->getPages().at(0).getBeats().at(8).addNote(42);
+		myTune->getPages().at(0).getBeats().at(9).addNote(42);
+		myTune->getPages().at(0).getBeats().at(10).addNote(42);
+		myTune->getPages().at(0).getBeats().at(12).addNote(44);
+		myTune->getPages().at(0).getBeats().at(13).addNote(47);
+		myTune->getPages().at(0).getBeats().at(14).addNote(47);
+
+
+		EnableSound();
 
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
+		if (m_keys[VK_SPACE].bPressed) togglePlayback();
+
+		if (isPlaying) {
+			if (tempo_current >= tempo_target) {
+				playhead++;
+				tempo_current = 0;
+			}
+			tempo_current += fElapsedTime;
+		}
+
 
 		return true;
 	}
 
-	static float pitchToSin(int pitch, float fGlobalTime, float amplitude) {
-		static const float freqs[]{27.500, 29.1353, 30.8677, 32.7032, 34.6479, 36.7081, 38.8909, 41.2035, 43.6536, 46.2493, 48.9995, 51.9130};
+	void togglePlayback() {
+		isPlaying = !isPlaying;
+		if (isPlaying) {
+			playhead = 0;
+			tempo_current = 0.0f;
+		}
+	}
 
-		return sinf(freqs[pitch % 12] * ((pitch / 12) + 1) * 3.14159f * 2.0 * fGlobalTime) > 0 ? 1.0 * amplitude : -1.0 * amplitude;
+	static float pitchToSin(int pitch, float fGlobalTime) {
+		static const float freqs[]{27.500, 29.1353, 30.8677, 32.7032, 34.6479, 36.7081, 38.8909, 41.2035, 43.6536, 46.2493, 48.9995, 51.9130};
+		//TODO: Which is faster: Calculate frequency per-frame or lookup table?
+		float baseFreq = freqs[(pitch - 1) % 12];
+		int octave = (pitch / 12);
+		//Final frequency is the base frequency * 2^n, where n = octave
+		//Bitwise shifting works like this:
+		//1 << 1 = 00000001 = 1
+		//1 << 2 = 00000010 = 2
+		//1 << 3 = 00000100 = 4
+		//1 << 4 = 00001000 = 8 etc...
+		float freq = baseFreq * (1 << octave);
+
+		return sinf(freq * 2.0 * 3.14159f * fGlobalTime) > 0 ? 1.0 : -1.0;
 
 	}
 
 	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep) {
+		if (!isPlaying) return 0.0f;
 		float final = 0.0f;
 		float amplitude = 0.1f;
 
-		if ((int)fGlobalTime % 2 == 0) {
-			final += pitchToSin(40, fGlobalTime, 0.1f);
-			final += pitchToSin(44, fGlobalTime, 0.1f);
-			final += pitchToSin(47, fGlobalTime, 0.1f);
-			final += pitchToSin(52, fGlobalTime, 0.1f);
+		//Get notes from current Beat
+		for (Note n : myTune->getPages().at(0).getBeats().at(playhead).getNotes()) {
+			final += pitchToSin(n.getPitch(), fGlobalTime) * amplitude;
 		}
-
 
 		return final;
 	}
