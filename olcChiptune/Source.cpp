@@ -33,7 +33,7 @@ class Chiptune : public olcConsoleGameEngine {
 	int playhead = 0;
 
 	//TDOO: Create a data structure for multiple of these
-	float tempo_target = 60.0f / 120.0f;
+	float tempo_target = 60.0f / 360.0f;
 	float tempo_current = 0.0f;
 
 	bool isPlaying = false;
@@ -45,19 +45,36 @@ class Chiptune : public olcConsoleGameEngine {
 	{
 		myTune = new Tune();
 
+		myTune->getPages().at(0).getBeats().at(0).addNote(53);
+		myTune->getPages().at(0).getBeats().at(0).addNote(49);
 		myTune->getPages().at(0).getBeats().at(0).addNote(44);
-		myTune->getPages().at(0).getBeats().at(1).addNote(42);
-		myTune->getPages().at(0).getBeats().at(2).addNote(40);
-		myTune->getPages().at(0).getBeats().at(3).addNote(42);
-		myTune->getPages().at(0).getBeats().at(4).addNote(44);
+
+		myTune->getPages().at(0).getBeats().at(3).addNote(53);
+		myTune->getPages().at(0).getBeats().at(3).addNote(49);
+		myTune->getPages().at(0).getBeats().at(3).addNote(44);
+
+		myTune->getPages().at(0).getBeats().at(5).addNote(53);
+		myTune->getPages().at(0).getBeats().at(5).addNote(49);
 		myTune->getPages().at(0).getBeats().at(5).addNote(44);
-		myTune->getPages().at(0).getBeats().at(6).addNote(44);
-		myTune->getPages().at(0).getBeats().at(8).addNote(42);
-		myTune->getPages().at(0).getBeats().at(9).addNote(42);
-		myTune->getPages().at(0).getBeats().at(10).addNote(42);
-		myTune->getPages().at(0).getBeats().at(12).addNote(44);
-		myTune->getPages().at(0).getBeats().at(13).addNote(47);
-		myTune->getPages().at(0).getBeats().at(14).addNote(47);
+
+		myTune->getPages().at(0).getBeats().at(7).addNote(53);
+		myTune->getPages().at(0).getBeats().at(7).addNote(49);
+		myTune->getPages().at(0).getBeats().at(7).addNote(44);
+
+		myTune->getPages().at(0).getBeats().at(8).addNote(53);
+		myTune->getPages().at(0).getBeats().at(8).addNote(49);
+		myTune->getPages().at(0).getBeats().at(8).addNote(44);
+
+		myTune->getPages().at(0).getBeats().at(10).addNote(51);
+		myTune->getPages().at(0).getBeats().at(10).addNote(48);
+		myTune->getPages().at(0).getBeats().at(10).addNote(44);
+
+		for (int i = 12; i < 16; i++) {
+			myTune->getPages().at(0).getBeats().at(i).addNote(56);
+			myTune->getPages().at(0).getBeats().at(i).addNote(53);
+			myTune->getPages().at(0).getBeats().at(i).addNote(48);
+		}
+		
 
 
 		EnableSound();
@@ -69,7 +86,8 @@ class Chiptune : public olcConsoleGameEngine {
 
 		if (isPlaying) {
 			if (tempo_current >= tempo_target) {
-				playhead++;
+				(playhead++);
+				playhead %= 16;
 				tempo_current = 0;
 			}
 			tempo_current += fElapsedTime;
