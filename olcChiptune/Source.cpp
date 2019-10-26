@@ -30,10 +30,13 @@ class Chiptune : public olcConsoleGameEngine {
 
 	int cursor_x = 0;
 	int cursor_y = 0;
+
+	//TODO: This could probably be a struct
 	int playhead = 0;
+	int currentPage = 0;
 
 	//TDOO: Create a data structure for multiple of these
-	float tempo_target = 60.0f / 360.0f;
+	float tempo_target = 60.0f / 120.0f;
 	float tempo_current = 0.0f;
 
 	bool isPlaying = false;
@@ -44,37 +47,10 @@ class Chiptune : public olcConsoleGameEngine {
 	virtual bool OnUserCreate() override
 	{
 		myTune = new Tune();
+		for(int i = 0; i < 12; i++) myTune->addPage();
 
-		myTune->getPages().at(0).getBeats().at(0).addNote(53);
-		myTune->getPages().at(0).getBeats().at(0).addNote(49);
-		myTune->getPages().at(0).getBeats().at(0).addNote(44);
-
-		myTune->getPages().at(0).getBeats().at(3).addNote(53);
-		myTune->getPages().at(0).getBeats().at(3).addNote(49);
-		myTune->getPages().at(0).getBeats().at(3).addNote(44);
-
-		myTune->getPages().at(0).getBeats().at(5).addNote(53);
-		myTune->getPages().at(0).getBeats().at(5).addNote(49);
-		myTune->getPages().at(0).getBeats().at(5).addNote(44);
-
-		myTune->getPages().at(0).getBeats().at(7).addNote(53);
-		myTune->getPages().at(0).getBeats().at(7).addNote(49);
-		myTune->getPages().at(0).getBeats().at(7).addNote(44);
-
-		myTune->getPages().at(0).getBeats().at(8).addNote(53);
-		myTune->getPages().at(0).getBeats().at(8).addNote(49);
-		myTune->getPages().at(0).getBeats().at(8).addNote(44);
-
-		myTune->getPages().at(0).getBeats().at(10).addNote(51);
-		myTune->getPages().at(0).getBeats().at(10).addNote(48);
-		myTune->getPages().at(0).getBeats().at(10).addNote(44);
-
-		for (int i = 12; i < 16; i++) {
-			myTune->getPages().at(0).getBeats().at(i).addNote(56);
-			myTune->getPages().at(0).getBeats().at(i).addNote(53);
-			myTune->getPages().at(0).getBeats().at(i).addNote(48);
-		}
-		
+		for (int i = 1; i <= 88; i++)
+			myTune->addNote(i / 16, i % 16, i);
 
 
 		EnableSound();
@@ -87,7 +63,10 @@ class Chiptune : public olcConsoleGameEngine {
 		if (isPlaying) {
 			if (tempo_current >= tempo_target) {
 				(playhead++);
-				playhead %= 16;
+				if (playhead == 16) {
+					playhead = 0;
+					currentPage++;
+				}
 				tempo_current = 0;
 			}
 			tempo_current += fElapsedTime;
@@ -109,7 +88,7 @@ class Chiptune : public olcConsoleGameEngine {
 		static const float freqs[]{27.500, 29.1353, 30.8677, 32.7032, 34.6479, 36.7081, 38.8909, 41.2035, 43.6536, 46.2493, 48.9995, 51.9130};
 		//TODO: Which is faster: Calculate frequency per-frame or lookup table?
 		float baseFreq = freqs[(pitch - 1) % 12];
-		int octave = (pitch / 12);
+		int octave = (pitch - 1) / 12;
 		//Final frequency is the base frequency * 2^n, where n = octave
 		//Bitwise shifting works like this:
 		//1 << 1 = 00000001 = 1
@@ -119,6 +98,7 @@ class Chiptune : public olcConsoleGameEngine {
 		float freq = baseFreq * (1 << octave);
 
 		return sinf(freq * 2.0 * 3.14159f * fGlobalTime) > 0 ? 1.0 : -1.0;
+		//return sinf(freq * 2.0 * 3.14159f * fGlobalTime);
 
 	}
 
@@ -128,7 +108,7 @@ class Chiptune : public olcConsoleGameEngine {
 		float amplitude = 0.1f;
 
 		//Get notes from current Beat
-		for (Note n : myTune->getPages().at(0).getBeats().at(playhead).getNotes()) {
+		for (Note n : myTune->getPages().at(currentPage).getBeats().at(playhead).getNotes()) {
 			final += pitchToSin(n.getPitch(), fGlobalTime) * amplitude;
 		}
 

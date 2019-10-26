@@ -50,6 +50,21 @@ public:
 	/// <returns>An std vector of Pages.</returns>
 	std::vector<Page>& getPages();
 
+	/// <summary>
+	/// Creates a Page and returns a pointer to it
+	/// </summary>
+	/// <returns>Pointer to the created page, or nullptr if the page couldn't be created.</returns>
+	Page* addPage();
+
+	/// <summary>
+	/// Adds a note given the page, beat, and note desired.
+	/// </summary>
+	/// <param name="page">The page to add to.</param>
+	/// <param name="beat">The beat to add to.</param>
+	/// <param name="note">The note to add to.</param>
+	/// <returns>True if the note was added, false if the Page doesn't exist, or a Note already exists.</returns>
+	bool addNote(int page, int beat, int note);
+
 private:
 	std::vector<Page> pages;
 
