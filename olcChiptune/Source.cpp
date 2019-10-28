@@ -1,9 +1,14 @@
-#include "olcConsoleGameEngine.h"
+#include <queue>
 #include <string>
+#include "olcConsoleGameEngine.h"
 #include "Tune.h"
 #include "Characters.h"
 
 class Chiptune : public olcConsoleGameEngine {
+	enum WaveType {Sine, Square, Triangle, SawAnalog, SawDigital, Noise};
+
+	static const int SCREEN_WIDTH = 64;
+	static const int SCREEN_HEIGHT = 32;
 
 	//std::wstring PadInt(int num, int placesCount);
 	//bool OffsetPlayhead(int amount);
@@ -32,8 +37,9 @@ class Chiptune : public olcConsoleGameEngine {
 	int cursor_y = 0;
 
 	//TODO: This could probably be a struct
-	int playhead = 0;
+	int playhead = 0; //The x-position of the current beat that is playing
 	int currentPage = 0;
+	int pitchOrigin = 0; //TODO: Better name? This is the "bottom pitch" currently visible when scrolling up/down piano roll
 
 	//TDOO: Create a data structure for multiple of these
 	float tempo_target = 60.0f / 120.0f;
@@ -58,7 +64,14 @@ class Chiptune : public olcConsoleGameEngine {
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
+
+		//Check user input
 		if (m_keys[VK_SPACE].bPressed) togglePlayback();
+
+		if (m_keys[VK_UP].bPressed) pitchOrigin = clamp(pitchOrigin + 1, 1, 88);
+		else if (m_keys[VK_DOWN].bPressed) pitchOrigin = clamp(pitchOrigin - 1, 1, 88);
+
+		//Behavior
 
 		if (isPlaying) {
 			if (tempo_current >= tempo_target) {
@@ -72,6 +85,32 @@ class Chiptune : public olcConsoleGameEngine {
 			tempo_current += fElapsedTime;
 		}
 
+		//Draw graphics on screen
+		Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, PIXEL_SOLID, 0);
+		//Draw sequencer region
+		BoxDrawing::DrawSolidBox(*this, 0, 0, Page::PAGE_BEATS + (Page::PAGE_BEATS / 4), SCREEN_HEIGHT - 1);
+		//Draw graphics inside of sequencer region
+		//'i' represents each grouping of 4 beats
+		for (int i = 0; i < Page::PAGE_BEATS / 4; i++) {
+			//Draw 4 notes per grouping of beats
+			for (int note = 0; note < 4; note++) {
+				for (Note n : myTune->getPages().at(currentPage).getBeats().at(i * 4 + note).getNotes()) {
+					//Draw this note
+					//TODO: Maybe Notes vector should be an array? We only need to iterate over a certain
+					//		range of notes, and a Vector removes the ability to index just those visible notes.
+					
+					/*
+					int pitch = n.getPitch();
+					if (pitch < pitchOrigin || pitch > SCREEN_HEIGHT - 2) continue; //This Note isn't on screen currently, skip drawing it
+					Draw(i * 5 + note, 88 - pitchOrigin, PIXEL_SOLID, 8);
+					*/
+				}
+			}
+			DrawLine(11 + (i * 5), 1, 11 + (i * 5), SCREEN_HEIGHT - 2, BoxDrawing::PIPE_MIDMID, 14);
+
+		}
+		Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, 10);
+		DrawString(1, 1, std::to_wstring(pitchOrigin));
 
 		return true;
 	}
@@ -84,8 +123,16 @@ class Chiptune : public olcConsoleGameEngine {
 		}
 	}
 
-	static float pitchToSin(int pitch, float fGlobalTime) {
+	static int clamp(int value, int min, int max) {
+		if (value < min) return min;
+		if (value > max) return max;
+		return value;
+	}
+
+	static float pitchToSin(int pitch, float fGlobalTime, WaveType waveType) {
+		if (waveType == Noise) return sinf(rand());
 		static const float freqs[]{27.500, 29.1353, 30.8677, 32.7032, 34.6479, 36.7081, 38.8909, 41.2035, 43.6536, 46.2493, 48.9995, 51.9130};
+		static const float PI = 3.14159f;
 		//TODO: Which is faster: Calculate frequency per-frame or lookup table?
 		float baseFreq = freqs[(pitch - 1) % 12];
 		int octave = (pitch - 1) / 12;
@@ -97,8 +144,18 @@ class Chiptune : public olcConsoleGameEngine {
 		//1 << 4 = 00001000 = 8 etc...
 		float freq = baseFreq * (1 << octave);
 
-		return sinf(freq * 2.0 * 3.14159f * fGlobalTime) > 0 ? 1.0 : -1.0;
-		//return sinf(freq * 2.0 * 3.14159f * fGlobalTime);
+		switch (waveType) {
+		case Sine:
+			return sinf(freq * 2.0 * PI * fGlobalTime); //Sine wave
+		case Square:
+			return sinf(freq * 2.0 * PI * fGlobalTime) > 0 ? 1.0 : -1.0; //Square wave
+		case SawDigital:
+			return (2.0 / PI) * (freq * PI * fmod(fGlobalTime, 1.0 / freq) - (PI / 2.0)); //Sawtooth digital
+		case SawAnalog:
+			//TODO
+		default:
+			return 0.0f;
+		}
 
 	}
 
@@ -109,7 +166,7 @@ class Chiptune : public olcConsoleGameEngine {
 
 		//Get notes from current Beat
 		for (Note n : myTune->getPages().at(currentPage).getBeats().at(playhead).getNotes()) {
-			final += pitchToSin(n.getPitch(), fGlobalTime) * amplitude;
+			final += pitchToSin(n.getPitch(), fGlobalTime, Square) * amplitude;
 		}
 
 		return final;

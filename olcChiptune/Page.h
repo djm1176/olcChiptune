@@ -6,7 +6,7 @@
 
 class Page {
 public:
-	static const int PAGE_BEATS = 16; 
+	static const int PAGE_BEATS = 32;
 	
 	Page();
 	std::vector<Beat>& getBeats();

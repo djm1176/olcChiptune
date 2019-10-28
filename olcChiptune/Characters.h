@@ -72,6 +72,13 @@ namespace BoxDrawing {
 		}
 	}
 
+	void DrawSolidBox(olcConsoleGameEngine& targetGraphic, int x1, int y1, int x2, int y2, short c = 9608, short col = 15) {
+		targetGraphic.DrawLine(x1, y1, x2, y1, c, col);
+		targetGraphic.DrawLine(x1, y2, x2, y2, c, col);
+		targetGraphic.DrawLine(x1, y1, x1, y2, c, col);
+		targetGraphic.DrawLine(x2, y1, x2, y2, c, col);
+	}
+
 	short ToColor(ConsoleColor foreground, ConsoleColor background) {
 		return (foreground << 1) + background;
 	}
