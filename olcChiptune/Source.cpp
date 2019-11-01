@@ -5,9 +5,10 @@
 #include "Characters.h"
 
 class Chiptune : public olcConsoleGameEngine {
+public:
 	enum WaveType {Sine, Square, Triangle, SawAnalog, SawDigital, Noise};
 
-	static const int SCREEN_WIDTH = 64;
+	static const int SCREEN_WIDTH = 46;
 	static const int SCREEN_HEIGHT = 32;
 
 	//std::wstring PadInt(int num, int placesCount);
@@ -33,13 +34,14 @@ class Chiptune : public olcConsoleGameEngine {
 	static const int COLOR_LTYELLOW =	14;
 	static const int COLOR_BTWHITE =	15;
 
+protected:
 	int cursor_x = 0;
 	int cursor_y = 0;
 
 	//TODO: This could probably be a struct
 	int playhead = 0; //The x-position of the current beat that is playing
 	int currentPage = 0;
-	int pitchOrigin = 0; //TODO: Better name? This is the "bottom pitch" currently visible when scrolling up/down piano roll
+	int currentPitchOffset = 0; //TODO: Better name? This is the "bottom pitch" currently visible when scrolling up/down piano roll
 
 	//TDOO: Create a data structure for multiple of these
 	float tempo_target = 60.0f / 120.0f;
@@ -47,19 +49,24 @@ class Chiptune : public olcConsoleGameEngine {
 
 	bool isPlaying = false;
 
-	Tune* myTune;
+	Tune* currentTune;
 
 	// Inherited via olcConsoleGameEngine
 	virtual bool OnUserCreate() override
 	{
-		myTune = new Tune();
-		for(int i = 0; i < 12; i++) myTune->addPage();
-
-		for (int i = 1; i <= 88; i++)
-			myTune->addNote(i / 16, i % 16, i);
-
 
 		EnableSound();
+		currentTune = new Tune();
+
+
+		//Debugging/Testing
+		for(int i = 0; i < 12; i++) currentTune->addPage();
+
+		for (int i = 1; i <= 88; i++)
+			currentTune->addNote(i / 16, i % 16, i);
+
+
+		
 
 		return true;
 	}
@@ -68,8 +75,8 @@ class Chiptune : public olcConsoleGameEngine {
 		//Check user input
 		if (m_keys[VK_SPACE].bPressed) togglePlayback();
 
-		if (m_keys[VK_UP].bPressed) pitchOrigin = clamp(pitchOrigin + 1, 1, 88);
-		else if (m_keys[VK_DOWN].bPressed) pitchOrigin = clamp(pitchOrigin - 1, 1, 88);
+		if (m_keys[VK_UP].bPressed) currentPitchOffset = clamp(currentPitchOffset + 1, 1, 7);
+		else if (m_keys[VK_DOWN].bPressed) currentPitchOffset = clamp(currentPitchOffset - 1, 1, 7);
 
 		//Behavior
 
@@ -85,32 +92,22 @@ class Chiptune : public olcConsoleGameEngine {
 			tempo_current += fElapsedTime;
 		}
 
-		//Draw graphics on screen
-		Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, PIXEL_SOLID, 0);
-		//Draw sequencer region
-		BoxDrawing::DrawSolidBox(*this, 0, 0, Page::PAGE_BEATS + (Page::PAGE_BEATS / 4), SCREEN_HEIGHT - 1);
-		//Draw graphics inside of sequencer region
-		//'i' represents each grouping of 4 beats
-		for (int i = 0; i < Page::PAGE_BEATS / 4; i++) {
-			//Draw 4 notes per grouping of beats
-			for (int note = 0; note < 4; note++) {
-				for (Note n : myTune->getPages().at(currentPage).getBeats().at(i * 4 + note).getNotes()) {
-					//Draw this note
-					//TODO: Maybe Notes vector should be an array? We only need to iterate over a certain
-					//		range of notes, and a Vector removes the ability to index just those visible notes.
-					
-					/*
-					int pitch = n.getPitch();
-					if (pitch < pitchOrigin || pitch > SCREEN_HEIGHT - 2) continue; //This Note isn't on screen currently, skip drawing it
-					Draw(i * 5 + note, 88 - pitchOrigin, PIXEL_SOLID, 8);
-					*/
-				}
-			}
-			DrawLine(11 + (i * 5), 1, 11 + (i * 5), SCREEN_HEIGHT - 2, BoxDrawing::PIPE_MIDMID, 14);
 
-		}
+		//Draw graphics
+		//Clear screen
+		
+		Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, PIXEL_SOLID, 0x000E);
+		
+		//Draw Timeline box
+		BoxDrawing::DrawBox(*this, SCREEN_WIDTH - (8 * 5 + 2), 2, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, BoxDrawing::BoxType::Pipe, 0x00E0);
+		Draw(4, 2, BoxDrawing::PIPE_TOPMID, 0x00E0);
+		DrawLine(0, 2, 3, 2, BoxDrawing::PIPE_HORIZONTAL, 0x00E0);
+
+		DrawString(5, SCREEN_HEIGHT - 2, std::to_wstring(screenSpaceToPitch(SCREEN_HEIGHT - 2, currentPitchOffset, SCREEN_HEIGHT)));
+
+		//Draw debug cursor
 		Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, 10);
-		DrawString(1, 1, std::to_wstring(pitchOrigin));
+
 
 		return true;
 	}
@@ -121,6 +118,12 @@ class Chiptune : public olcConsoleGameEngine {
 			playhead = 0;
 			tempo_current = 0.0f;
 		}
+	}
+
+	//Helper functions - TODO: Move to a header file?
+
+	static int screenSpaceToPitch(int yCoord, int offset, int screenHeight) {
+		return yCoord + offset;
 	}
 
 	static int clamp(int value, int min, int max) {
@@ -165,7 +168,7 @@ class Chiptune : public olcConsoleGameEngine {
 		float amplitude = 0.1f;
 
 		//Get notes from current Beat
-		for (Note n : myTune->getPages().at(currentPage).getBeats().at(playhead).getNotes()) {
+		for (Note n : currentTune->getPages().at(currentPage).getBeats().at(playhead).getNotes()) {
 			final += pitchToSin(n.getPitch(), fGlobalTime, Square) * amplitude;
 		}
 
@@ -177,7 +180,7 @@ int main() {
 
 	Chiptune game;
 
-	game.ConstructConsole(64, 32, 16, 16);
+	game.ConstructConsole(Chiptune::SCREEN_WIDTH, Chiptune::SCREEN_HEIGHT, 16, 16);
 	game.Start();
 
 	return 0;
