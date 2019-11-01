@@ -75,8 +75,8 @@ protected:
 		//Check user input
 		if (m_keys[VK_SPACE].bPressed) togglePlayback();
 
-		if (m_keys[VK_UP].bPressed) currentPitchOffset = clamp(currentPitchOffset + 1, 1, 7);
-		else if (m_keys[VK_DOWN].bPressed) currentPitchOffset = clamp(currentPitchOffset - 1, 1, 7);
+		if (m_keys[VK_UP].bPressed) currentPitchOffset = clamp(currentPitchOffset + 1, 1, 88 - (SCREEN_HEIGHT - 5));
+		else if (m_keys[VK_DOWN].bPressed) currentPitchOffset = clamp(currentPitchOffset - 1, 1, 88 - (SCREEN_HEIGHT - 5));
 
 		//Behavior
 
@@ -94,16 +94,26 @@ protected:
 
 
 		//Draw graphics
+
 		//Clear screen
-		
 		Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, PIXEL_SOLID, 0x000E);
-		
+
 		//Draw Timeline box
 		BoxDrawing::DrawBox(*this, SCREEN_WIDTH - (8 * 5 + 2), 2, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, BoxDrawing::BoxType::Pipe, 0x00E0);
 		Draw(4, 2, BoxDrawing::PIPE_TOPMID, 0x00E0);
 		DrawLine(0, 2, 3, 2, BoxDrawing::PIPE_HORIZONTAL, 0x00E0);
 
-		DrawString(5, SCREEN_HEIGHT - 2, std::to_wstring(screenSpaceToPitch(SCREEN_HEIGHT - 2, currentPitchOffset, SCREEN_HEIGHT)));
+		for (int i = 0; i < SCREEN_HEIGHT - 4; i++) {
+			static const bool WHITE_KEYS[]{1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0};
+			//Draw piano roll thing
+			int pitch = indexToPitch(i, currentPitchOffset, SCREEN_HEIGHT - 4);
+			DrawLine(0, i + 3, 3, i + 3, PIXEL_SOLID, (WHITE_KEYS[(pitch - 1) % 12] ? 0x000F : 0x00F0));
+			//Draw name
+			DrawString(5, i + 3, std::to_wstring(pitch));
+			DrawString(9, i + 3, std::to_wstring((pitch + 8) / 12));
+			
+			
+		}
 
 		//Draw debug cursor
 		Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, 10);
@@ -122,8 +132,8 @@ protected:
 
 	//Helper functions - TODO: Move to a header file?
 
-	static int screenSpaceToPitch(int yCoord, int offset, int screenHeight) {
-		return yCoord + offset;
+	static int indexToPitch(int index, int offset, int height) {
+		return 88 - height - index + offset - SCREEN_HEIGHT - 1;
 	}
 
 	static int clamp(int value, int min, int max) {
