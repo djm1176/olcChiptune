@@ -4,6 +4,11 @@
 #include "Tune.h"
 #include "Characters.h"
 
+//Set to 1: The program will only refresh the screen when necesary
+//Set to 0: The program will refresh the screen every frame
+#define ENABLE_REFRESH_DETECTION 0
+
+
 class Chiptune : public olcConsoleGameEngine {
 public:
 	enum WaveType {Sine, Square, Triangle, SawAnalog, SawDigital, Noise};
@@ -41,13 +46,15 @@ protected:
 	//TODO: This could probably be a struct
 	int playhead = 0; //The x-position of the current beat that is playing
 	int currentPage = 0;
-	int currentPitchOffset = 0; //TODO: Better name? This is the "bottom pitch" currently visible when scrolling up/down piano roll
+	int currentPitchOffset = 1; //TODO: Better name? This is the "bottom pitch" currently visible when scrolling up/down piano roll
 
 	//TDOO: Create a data structure for multiple of these
 	float tempo_target = 60.0f / 120.0f;
 	float tempo_current = 0.0f;
 
 	bool isPlaying = false;
+
+	bool refreshDisplay = true; //Set this to TRUE if the screen should be redrawn.
 
 	Tune* currentTune;
 
@@ -75,14 +82,25 @@ protected:
 		//Check user input
 		if (m_keys[VK_SPACE].bPressed) togglePlayback();
 
-		if (m_keys[VK_UP].bPressed) currentPitchOffset = clamp(currentPitchOffset + 1, 1, 88 - (SCREEN_HEIGHT - 5));
-		else if (m_keys[VK_DOWN].bPressed) currentPitchOffset = clamp(currentPitchOffset - 1, 1, 88 - (SCREEN_HEIGHT - 5));
+		if (m_keys[VK_UP].bPressed) {
+			currentPitchOffset = clamp(currentPitchOffset + 1, 1, 88 - (SCREEN_HEIGHT - 5));
+			refreshDisplay = true;
+		}
+		else if (m_keys[VK_DOWN].bPressed) {
+			currentPitchOffset = clamp(currentPitchOffset - 1, 1, 88 - (SCREEN_HEIGHT - 5));
+			refreshDisplay = true;
+		}
+
+		if (m_mouse[0].bPressed && m_mousePosX > 4 && m_mousePosX < ScreenWidth() - 1 && m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) {
+			currentTune->addNote(currentPage, m_mousePosX - 5, indexToPitch(m_mousePosY, currentPitchOffset, SCREEN_HEIGHT - 4));
+		}
 
 		//Behavior
 
 		if (isPlaying) {
 			if (tempo_current >= tempo_target) {
 				(playhead++);
+				refreshDisplay = true; //Playhead moved; redraw necessary
 				if (playhead == 16) {
 					playhead = 0;
 					currentPage++;
@@ -94,7 +112,13 @@ protected:
 
 
 		//Draw graphics
+		if (!refreshDisplay) return true; //No need to draw on the screen if nothing changed
 
+#if ENABLE_REFRESH_DETECTION 1
+		refreshDisplay = false;
+#endif
+		
+		//Changes were made (refreshDisplay is true) ... Let's redraw the screen...
 		//Clear screen
 		Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, PIXEL_SOLID, 0x000E);
 
@@ -107,13 +131,25 @@ protected:
 			static const bool WHITE_KEYS[]{1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0};
 			//Draw piano roll thing
 			int pitch = indexToPitch(i, currentPitchOffset, SCREEN_HEIGHT - 4);
-			DrawLine(0, i + 3, 3, i + 3, PIXEL_SOLID, (WHITE_KEYS[(pitch - 1) % 12] ? 0x000F : 0x00F0));
+			//DrawLine(0, i + 3, 3, i + 3, PIXEL_SOLID, (WHITE_KEYS[(pitch - 1) % 12] ? 0x000F : 0x00F0));
 			//Draw name
-			DrawString(5, i + 3, std::to_wstring(pitch));
-			DrawString(9, i + 3, std::to_wstring((pitch + 8) / 12));
+			DrawString(0, i + 3, pitchToWstring(pitch), (WHITE_KEYS[(pitch - 1) % 12] ? 0x00F0 : 0x000F));
+			//DrawString(9, i + 3, std::to_wstring((pitch + 8) / 12));
 			
 			
 		}
+		//Draw horizontal cursor bar
+		if (m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) DrawLine(5, m_mousePosY, ScreenWidth() - 2, m_mousePosY, PIXEL_QUARTER, 0x00E8);
+
+		//Draw subdivisions
+		for (int i = 0; i < Page::PAGE_BEATS / 4; i++) {
+			DrawLine(5 + i * 4, 3, 5 + i * 4, ScreenHeight() - 2, i % 2 == 0 ? PIXEL_HALF : PIXEL_QUARTER, 0x00E6);
+		}
+
+		//Draw notes
+		for(int i = 0; i < Page::PAGE_BEATS; i++)
+			for(Note n: currentTune->getPages().at(currentPage).getBeats().at(i).getNotes())
+				Draw(5 + i, pitchToIndex(n.getPitch(), currentPitchOffset, SCREEN_HEIGHT - 4), PIXEL_SOLID, 0x0000);
 
 		//Draw info graphics
 
@@ -121,12 +157,12 @@ protected:
 		DrawString(1, 0, L"Title", 0x00E0);
 		DrawString(7, 0, currentTune->name, 0x0007);
 
+		//Tempo
 		DrawString(1, 1, L"Tempo", 0x00E0);
 		DrawString(7, 1, std::to_wstring(currentTune->tempo), 0x0007);
 
 		//Draw debug cursor
 		Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, 10);
-
 
 		return true;
 	}
@@ -137,12 +173,17 @@ protected:
 			playhead = 0;
 			tempo_current = 0.0f;
 		}
+		refreshDisplay = true;
 	}
 
 	//Helper functions - TODO: Move to a header file?
 
 	static int indexToPitch(int index, int offset, int height) {
 		return 88 - height - index + offset - SCREEN_HEIGHT - 1;
+	}
+
+	static int pitchToIndex(int pitch, int offset, int height) {
+		return 88 - height - pitch + offset - SCREEN_HEIGHT - 1;
 	}
 
 	static int clamp(int value, int min, int max) {
@@ -179,6 +220,11 @@ protected:
 			return 0.0f;
 		}
 
+	}
+
+	static std::wstring pitchToWstring(int pitch) {
+		static std::wstring PITCH_FLATS[]{ L"A ", L"Bb", L"B ", L"C ", L"Db", L"D ", L"Eb", L"E ", L"F ", L"Gb", L"G ", L"Ab" };
+		return PITCH_FLATS[(pitch - 1) % 12];
 	}
 
 	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep) {

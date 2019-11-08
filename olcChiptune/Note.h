@@ -3,7 +3,6 @@
 
 #include <string>
 
-static std::wstring PITCH_FLATS[]{ L"A    ", L"Bb/A#", L"B    ", L"C    ", L"Db/C#", L"D    ", L"Eb/D#", L"E    ", L"F    ", L"Gb/F#", L"G    ", L"Ab/G#" };
 
 enum Accidentals { Flats, Sharps };
 
