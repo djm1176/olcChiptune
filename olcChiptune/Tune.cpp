@@ -1,7 +1,7 @@
 #include "Tune.h"
 
 
-Tune::Tune() : pages{ std::vector<Page>(DEFAULT_PAGE_COUNT) }, tempo{ DEFAULT_TEMPO }, playhead{ 0 } {}
+Tune::Tune() : pages{ std::vector<Page>(DEFAULT_PAGE_COUNT) }, tempo{ DEFAULT_TEMPO }, playhead{ 0 }, name{ L"Untitled" }{}
 
 Tune::~Tune() {
 	pages.clear();
@@ -10,6 +10,7 @@ Tune::~Tune() {
 
 bool Tune::load(std::string filename) {
 	//TODO: Implement loading according to header file
+	//TODO: Develop a file format that is compatible between different versions
 	return false;
 }
 

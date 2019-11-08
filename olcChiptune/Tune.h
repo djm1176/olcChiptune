@@ -35,6 +35,11 @@ public:
 	bool save(std::string filename, bool overwrite = false);
 
 	/// <summary>
+	/// The name of this song.
+	/// </summary>
+	std::wstring name;
+
+	/// <summary>
 	/// The tempo in beats per minute to play at playback.
 	/// </summary>
 	int tempo;

@@ -115,6 +115,15 @@ protected:
 			
 		}
 
+		//Draw info graphics
+
+		//Title
+		DrawString(1, 0, L"Title", 0x00E0);
+		DrawString(7, 0, currentTune->name, 0x0007);
+
+		DrawString(1, 1, L"Tempo", 0x00E0);
+		DrawString(7, 1, std::to_wstring(currentTune->tempo), 0x0007);
+
 		//Draw debug cursor
 		Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, 10);
 
@@ -190,7 +199,7 @@ int main() {
 
 	Chiptune game;
 
-	game.ConstructConsole(Chiptune::SCREEN_WIDTH, Chiptune::SCREEN_HEIGHT, 16, 16);
+	game.ConstructConsole(Chiptune::SCREEN_WIDTH, Chiptune::SCREEN_HEIGHT, 12, 16);
 	game.Start();
 
 	return 0;
