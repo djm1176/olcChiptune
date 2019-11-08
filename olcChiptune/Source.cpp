@@ -42,8 +42,8 @@ public:
 protected:
 	int cursor_x = 0;
 	int cursor_y = 0;
-	int cursor_x_old = 0;
-	int cursor_y_old = 0;
+	int cursor_dx = 0;
+	int cursor_dy = 0;
 
 	//TODO: This could probably be a struct
 	int playhead = 0; //The x-position of the current beat that is playing
@@ -81,6 +81,12 @@ protected:
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
 
+		cursor_dx = m_mousePosX - cursor_x;
+		cursor_dy = m_mousePosY - cursor_y;
+
+		cursor_x = m_mousePosX;
+		cursor_y = m_mousePosY;
+
 		//Check user input
 		if (m_keys[VK_SPACE].bPressed) togglePlayback();
 
@@ -93,9 +99,9 @@ protected:
 			refreshDisplay = true;
 		}
 
-		if (m_mouse[0].bPressed && m_mousePosX > 4 && m_mousePosX < ScreenWidth() - 1 && m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) {
-			currentTune->toggleNote(currentPage, m_mousePosX - 5, indexToPitch(m_mousePosY, currentPitchOffset, SCREEN_HEIGHT - 4));
-			//currentTune->addNote(currentPage, m_mousePosX - 5, indexToPitch(m_mousePosY, currentPitchOffset, SCREEN_HEIGHT - 4));
+		if (m_mouse[0].bPressed && cursor_x > 4 && cursor_x < ScreenWidth() - 1 && cursor_y > 2 && cursor_y < ScreenHeight() - 1) {
+			currentTune->toggleNote(currentPage, cursor_x - 5, indexToPitch(cursor_y, currentPitchOffset, SCREEN_HEIGHT - 4));
+			//currentTune->addNote(currentPage, cursor_x - 5, indexToPitch(cursor_y, currentPitchOffset, SCREEN_HEIGHT - 4));
 		}
 
 		//Behavior
@@ -144,7 +150,7 @@ protected:
 			
 		}
 		//Draw horizontal cursor bar
-		if (m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) DrawLine(5, m_mousePosY, ScreenWidth() - 2, m_mousePosY, PIXEL_QUARTER, 0x00E8);
+		if (cursor_y > 2 && cursor_y < ScreenHeight() - 1) DrawLine(5, cursor_y, ScreenWidth() - 2, cursor_y, PIXEL_QUARTER, 0x00E8);
 
 		//Draw subdivisions
 		for (int i = 0; i < Page::PAGE_BEATS / 4; i++) {
@@ -171,7 +177,7 @@ protected:
 		DrawString(7, 1, std::to_wstring(currentTune->tempo), 0x0007);
 
 		//Draw debug cursor
-		Draw(m_mousePosX, m_mousePosY, PIXEL_SOLID, 10);
+		Draw(cursor_x, cursor_y, PIXEL_SOLID, 10);
 
 		return true;
 	}
