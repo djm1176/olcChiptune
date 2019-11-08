@@ -16,13 +16,25 @@ bool Beat::addNote(int pitch) {
 		//Create a note if we can
 		for (Note n : notes) {
 			if (n.getPitch() == pitch) return false;
-			else {
-				Note newNote = Note(pitch);
-				notes.push_back(newNote);
-				return true;
-			}
+
+		}
+		//None of the notes are this pitch, so we can make it
+		Note newNote = Note(pitch);
+		notes.push_back(newNote);
+		return true;
+	}
+}
+
+void Beat::toggleNote(int pitch) {
+	for(Note n : notes) {
+		if (n.getPitch() == pitch) {
+			removeNote(pitch);
+			return;
 		}
 	}
+
+	//Didn't return, so add note
+	addNote(pitch);
 }
 
 void Beat::removeNote(int pitch) {

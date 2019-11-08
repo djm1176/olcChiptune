@@ -42,6 +42,8 @@ public:
 protected:
 	int cursor_x = 0;
 	int cursor_y = 0;
+	int cursor_x_old = 0;
+	int cursor_y_old = 0;
 
 	//TODO: This could probably be a struct
 	int playhead = 0; //The x-position of the current beat that is playing
@@ -93,6 +95,7 @@ protected:
 
 		if (m_mouse[0].bPressed && m_mousePosX > 4 && m_mousePosX < ScreenWidth() - 1 && m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) {
 			currentTune->toggleNote(currentPage, m_mousePosX - 5, indexToPitch(m_mousePosY, currentPitchOffset, SCREEN_HEIGHT - 4));
+			//currentTune->addNote(currentPage, m_mousePosX - 5, indexToPitch(m_mousePosY, currentPitchOffset, SCREEN_HEIGHT - 4));
 		}
 
 		//Behavior

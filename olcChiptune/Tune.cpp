@@ -38,5 +38,5 @@ bool Tune::addNote(int page, int beat, int note) {
 }
 
 void Tune::toggleNote(int page, int beat, int note) {
-	if(pages.at(page).getBeats().at(beat % Page::PAGE_BEATS).)
+	pages.at(page).getBeats().at(beat % Page::PAGE_BEATS).toggleNote(note);
 }
