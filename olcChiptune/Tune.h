@@ -70,6 +70,9 @@ public:
 	/// <returns>True if the note was added, false if the Page doesn't exist, or a Note already exists.</returns>
 	bool addNote(int page, int beat, int note);
 
+
+	void toggleNote(int page, int beat, int note);
+
 private:
 	std::vector<Page> pages;
 

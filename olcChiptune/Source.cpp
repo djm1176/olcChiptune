@@ -13,7 +13,7 @@ class Chiptune : public olcConsoleGameEngine {
 public:
 	enum WaveType {Sine, Square, Triangle, SawAnalog, SawDigital, Noise};
 
-	static const int SCREEN_WIDTH = 46;
+	static const int SCREEN_WIDTH = 70;
 	static const int SCREEN_HEIGHT = 32;
 
 	//std::wstring PadInt(int num, int placesCount);
@@ -49,7 +49,7 @@ protected:
 	int currentPitchOffset = 1; //TODO: Better name? This is the "bottom pitch" currently visible when scrolling up/down piano roll
 
 	//TDOO: Create a data structure for multiple of these
-	float tempo_target = 60.0f / 120.0f;
+	float tempo_target = 15.0f / 120.0f;
 	float tempo_current = 0.0f;
 
 	bool isPlaying = false;
@@ -69,8 +69,8 @@ protected:
 		//Debugging/Testing
 		for(int i = 0; i < 12; i++) currentTune->addPage();
 
-		for (int i = 1; i <= 88; i++)
-			currentTune->addNote(i / 16, i % 16, i);
+		//for (int i = 1; i <= 88; i++)
+		//	currentTune->addNote(i / 16, i % 16, i);
 
 
 		
@@ -92,7 +92,7 @@ protected:
 		}
 
 		if (m_mouse[0].bPressed && m_mousePosX > 4 && m_mousePosX < ScreenWidth() - 1 && m_mousePosY > 2 && m_mousePosY < ScreenHeight() - 1) {
-			currentTune->addNote(currentPage, m_mousePosX - 5, indexToPitch(m_mousePosY, currentPitchOffset, SCREEN_HEIGHT - 4));
+			currentTune->toggleNote(currentPage, m_mousePosX - 5, indexToPitch(m_mousePosY, currentPitchOffset, SCREEN_HEIGHT - 4));
 		}
 
 		//Behavior
@@ -101,7 +101,7 @@ protected:
 			if (tempo_current >= tempo_target) {
 				(playhead++);
 				refreshDisplay = true; //Playhead moved; redraw necessary
-				if (playhead == 16) {
+				if (playhead == Page::PAGE_BEATS) {
 					playhead = 0;
 					currentPage++;
 				}
@@ -123,9 +123,11 @@ protected:
 		Fill(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, PIXEL_SOLID, 0x000E);
 
 		//Draw Timeline box
-		BoxDrawing::DrawBox(*this, SCREEN_WIDTH - (8 * 5 + 2), 2, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, BoxDrawing::BoxType::Pipe, 0x00E0);
+		BoxDrawing::DrawBox(*this, 4, 2, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, BoxDrawing::BoxType::Pipe, 0x00E0);
 		Draw(4, 2, BoxDrawing::PIPE_TOPMID, 0x00E0);
+		Draw(4, SCREEN_HEIGHT - 1, BoxDrawing::PIPE_BOTMID, 0x00E0);
 		DrawLine(0, 2, 3, 2, BoxDrawing::PIPE_HORIZONTAL, 0x00E0);
+		DrawLine(0, SCREEN_HEIGHT - 1, 3, SCREEN_HEIGHT - 1, BoxDrawing::PIPE_HORIZONTAL, 0x00E0);
 
 		for (int i = 0; i < SCREEN_HEIGHT - 4; i++) {
 			static const bool WHITE_KEYS[]{1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0};
@@ -145,6 +147,10 @@ protected:
 		for (int i = 0; i < Page::PAGE_BEATS / 4; i++) {
 			DrawLine(5 + i * 4, 3, 5 + i * 4, ScreenHeight() - 2, i % 2 == 0 ? PIXEL_HALF : PIXEL_QUARTER, 0x00E6);
 		}
+
+		//Draw the playhead
+		if (isPlaying)
+			DrawLine(5 + playhead, 3, 5 + playhead, ScreenHeight() - 2, BoxDrawing::LINE_VERTICAL, 0x00E0);
 
 		//Draw notes
 		for(int i = 0; i < Page::PAGE_BEATS; i++)
@@ -172,6 +178,12 @@ protected:
 		if (isPlaying) {
 			playhead = 0;
 			tempo_current = 0.0f;
+		}
+		else {
+			//Everything that should happen when STOPPED...
+			currentPage = 0;
+
+
 		}
 		refreshDisplay = true;
 	}

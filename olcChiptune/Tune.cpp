@@ -36,3 +36,7 @@ bool Tune::addNote(int page, int beat, int note) {
 	//Modulus to ensure bounds checking
 	return pages.at(page).getBeats().at(beat % Page::PAGE_BEATS).addNote(note);
 }
+
+void Tune::toggleNote(int page, int beat, int note) {
+	if(pages.at(page).getBeats().at(beat % Page::PAGE_BEATS).)
+}
