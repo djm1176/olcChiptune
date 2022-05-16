@@ -25,7 +25,7 @@
     <ClCompile Include="olcConsoleGameEngine.cpp" />
     <ClCompile Include="Page.cpp" />
     <ClCompile Include="PianoWindow.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Chiptune.cpp" />
     <ClCompile Include="Style.cpp" />
     <ClCompile Include="Tune.cpp" />
     <ClCompile Include="Window.cpp" />
