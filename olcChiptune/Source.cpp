@@ -266,7 +266,7 @@ int main() {
 
 	Chiptune game;
 
-	game.ConstructConsole(Chiptune::SCREEN_WIDTH, Chiptune::SCREEN_HEIGHT, 12, 16);
+	game.ConstructConsole(Chiptune::SCREEN_WIDTH, Chiptune::SCREEN_HEIGHT, 6, 8);
 	game.Start();
 
 	return 0;

@@ -877,6 +877,12 @@ private:
 						}
 					}
 
+					if (m_keyNewState[i] != m_keyOldState[i])
+						if (m_keyNewState)
+							OnKeyDown(i);
+						else
+							OnkeyUp(i);
+
 					m_keyOldState[i] = m_keyNewState[i];
 				}
 
@@ -907,13 +913,21 @@ private:
 						{
 							m_mousePosX = inBuf[i].Event.MouseEvent.dwMousePosition.X;
 							m_mousePosY = inBuf[i].Event.MouseEvent.dwMousePosition.Y;
+							OnMouseMove(m_mousePosX, m_mousePosY);
 						}
 						break;
 
 						case 0:
 						{
-							for (int m = 0; m < 5; m++)
-								m_mouseNewState[m] = (inBuf[i].Event.MouseEvent.dwButtonState & (1 << m)) > 0;
+							for (int m = 0; m < 5; m++) {
+								auto m_NewState = (inBuf[i].Event.MouseEvent.dwButtonState & (1 << m)) > 0;
+								m_mouseNewState[m] = m_NewState;
+								
+								if (m_NewState)
+									OnMouseDown(m);
+								else
+									OnMouseUp(m);
+							}
 
 						}
 						break;
@@ -992,6 +1006,13 @@ public:
 
 	// Optional for clean up 
 	virtual bool OnUserDestroy() { return true; }
+
+	// Event handling
+	virtual void OnMouseMove(int x, int y) {}
+	virtual void OnMouseDown(int index) {}
+	virtual void OnMouseUp(int index) {}
+	virtual void OnKeyDown(int key) {}
+	virtual void OnkeyUp(int key) {}
 
 
 
