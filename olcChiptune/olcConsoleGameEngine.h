@@ -1210,8 +1210,8 @@ protected: // Audio Engine =====================================================
 	// and then issued to the soundcard.
 	void AudioThread()
 	{
-		m_fGlobalTime = 0.0f;
-		float fTimeStep = 1.0f / (float)m_nSampleRate;
+		m_fGlobalTime = 0.0;
+		double fTimeStep = 1.0f / (double)m_nSampleRate;
 
 		// Goofy hack to get maximum integer for a type at run-time
 		short nMaxSample = (short)pow(2, (sizeof(short) * 8) - 1) - 1;
@@ -1268,13 +1268,13 @@ protected: // Audio Engine =====================================================
 	}
 
 	// Overridden by user if they want to generate sound in real-time
-	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep)
+	virtual float onUserSoundSample(int nChannel, double fGlobalTime, float fTimeStep)
 	{
 		return 0.0f;
 	}
 
 	// Overriden by user if they want to manipulate the sound before it is played
-	virtual float onUserSoundFilter(int nChannel, float fGlobalTime, float fSample)
+	virtual float onUserSoundFilter(int nChannel, double fGlobalTime, float fSample)
 	{
 		return fSample;
 	}
@@ -1296,7 +1296,7 @@ protected: // Audio Engine =====================================================
 	// Finally, before the sound is issued to the operating system for performing, the
 	// user gets one final chance to "filter" the sound, perhaps changing the volume
 	// or adding funky effects
-	float GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep)
+	float GetMixerOutput(int nChannel, double fGlobalTime, float fTimeStep)
 	{
 		// Accumulate sample for this channel
 		float fMixerSample = 0.0f;
@@ -1338,7 +1338,7 @@ protected: // Audio Engine =====================================================
 	std::atomic<unsigned int> m_nBlockFree = 0;
 	std::condition_variable m_cvBlockNotZero;
 	std::mutex m_muxBlockNotZero;
-	std::atomic<float> m_fGlobalTime = 0.0f;
+	std::atomic<double> m_fGlobalTime = 0.0f;
 
 
 
