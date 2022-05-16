@@ -1,5 +1,4 @@
-#ifndef NOTE_H
-#define NOTE_H
+#pragma once
 
 #include <string>
 
@@ -22,5 +21,3 @@ public:
 private:
 	int m_Pitch;
 };
-
-#endif

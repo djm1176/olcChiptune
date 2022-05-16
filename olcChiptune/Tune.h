@@ -1,6 +1,4 @@
 #pragma once
-#ifndef OLCTUNE_H
-#define OLCTUNE_H
 
 #include <string>
 #include <vector>
@@ -77,5 +75,3 @@ private:
 	std::vector<Page> pages;
 
 };
-
-#endif

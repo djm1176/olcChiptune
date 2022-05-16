@@ -1,5 +1,4 @@
-#ifndef OLCBEAT_H
-#define OLCBEAT_H
+#pragma once
 
 #include "Note.h"
 #include <vector>
@@ -17,5 +16,3 @@ private:
 	std::vector<Note> notes;
 
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef OLCPAGE_H
-#define OLCPAGE_H
+#pragma once
 
 #include "Beat.h"
 #include <vector>
@@ -16,7 +15,3 @@ private:
 	std::vector<Beat> beats;
 
 };
-
-
-
-#endif

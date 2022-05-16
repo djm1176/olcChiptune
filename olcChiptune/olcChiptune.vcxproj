@@ -20,18 +20,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Beat.cpp" />
+    <ClCompile Include="Event.cpp" />
     <ClCompile Include="Note.cpp" />
+    <ClCompile Include="olcConsoleGameEngine.cpp" />
     <ClCompile Include="Page.cpp" />
+    <ClCompile Include="PianoWindow.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Style.cpp" />
     <ClCompile Include="Tune.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Beat.h" />
     <ClInclude Include="Characters.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="Note.h" />
     <ClInclude Include="olcConsoleGameEngine.h" />
     <ClInclude Include="Page.h" />
+    <ClInclude Include="PianoWindow.h" />
+    <ClInclude Include="Style.h" />
     <ClInclude Include="Tune.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

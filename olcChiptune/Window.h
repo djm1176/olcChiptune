@@ -1,8 +1,10 @@
 #pragma once
 
-#include "olcConsoleGameEngine.h"
+#include <vector>
 #include "Style.h"
 #include "Event.h"
+
+class olcConsoleGameEngine;
 
 class Window {
 public:

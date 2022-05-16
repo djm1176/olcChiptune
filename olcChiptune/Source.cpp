@@ -40,10 +40,6 @@ public:
 	static const int COLOR_BTWHITE =	15;
 
 protected:
-	int cursor_x = 0;
-	int cursor_y = 0;
-	int cursor_dx = 0;
-	int cursor_dy = 0;
 
 	//TODO: This could probably be a struct
 	int playhead = 0; //The x-position of the current beat that is playing
@@ -71,8 +67,8 @@ protected:
 		//Debugging/Testing
 		for(int i = 0; i < 12; i++) currentTune->addPage();
 
-		//for (int i = 1; i <= 88; i++)
-		//	currentTune->addNote(i / 16, i % 16, i);
+		for (int i = 1; i <= 88; i++)
+			currentTune->addNote(i / 16, i % 16, i);
 
 
 		
@@ -80,12 +76,6 @@ protected:
 		return true;
 	}
 	virtual bool OnUserUpdate(float fElapsedTime) override {
-
-		cursor_dx = m_mousePosX - cursor_x;
-		cursor_dy = m_mousePosY - cursor_y;
-
-		cursor_x = m_mousePosX;
-		cursor_y = m_mousePosY;
 
 		//Check user input
 		if (m_keys[VK_SPACE].bPressed) togglePlayback();
@@ -99,8 +89,8 @@ protected:
 			refreshDisplay = true;
 		}
 
-		if (m_mouse[0].bPressed && cursor_x > 4 && cursor_x < ScreenWidth() - 1 && cursor_y > 2 && cursor_y < ScreenHeight() - 1) {
-			currentTune->toggleNote(currentPage, cursor_x - 5, indexToPitch(cursor_y, currentPitchOffset, SCREEN_HEIGHT - 4));
+		if (m_mouse[0].bPressed && GetMouseX() > 4 && GetMouseX() < ScreenWidth() - 1 && GetMouseY() > 2 && GetMouseY() < ScreenHeight() - 1) {
+			currentTune->toggleNote(currentPage, GetMouseX() - 5, indexToPitch(GetMouseY(), currentPitchOffset, SCREEN_HEIGHT - 4));
 			//currentTune->addNote(currentPage, cursor_x - 5, indexToPitch(cursor_y, currentPitchOffset, SCREEN_HEIGHT - 4));
 		}
 
@@ -150,7 +140,7 @@ protected:
 			
 		}
 		//Draw horizontal cursor bar
-		if (cursor_y > 2 && cursor_y < ScreenHeight() - 1) DrawLine(5, cursor_y, ScreenWidth() - 2, cursor_y, PIXEL_QUARTER, 0x00E8);
+		if (GetMouseY() > 2 && GetMouseY() < ScreenHeight() - 1) DrawLine(5, GetMouseY(), ScreenWidth() - 2, GetMouseY(), PIXEL_QUARTER, 0x00E8);
 
 		//Draw subdivisions
 		for (int i = 0; i < Page::PAGE_BEATS / 4; i++) {
@@ -177,9 +167,30 @@ protected:
 		DrawString(7, 1, std::to_wstring(currentTune->tempo), 0x0007);
 
 		//Draw debug cursor
-		Draw(cursor_x, cursor_y, PIXEL_SOLID, 10);
+		Draw(GetMouseX(), GetMouseY(), PIXEL_SOLID, 10);
 
 		return true;
+	}
+
+	virtual void OnMouseMove(int x, int y) {
+		DrawString(1, 1, std::to_wstring(x) + L', ' + std::to_wstring(y));
+	}
+
+	virtual void OnMouseDown(int index) override {
+		Draw(1 + index, 2);
+	}
+
+	virtual void OnMouseUp(int index) override {
+		Draw(1 + index, 3);
+	}
+
+	virtual void OnKeyDown(int key) override {
+		Draw((2 + key) % SCREEN_WIDTH, 4 + ((2 + key) / SCREEN_WIDTH));
+	}
+
+	virtual void OnKeyUp(int key) override {
+		Draw((256 + key) % SCREEN_WIDTH, 4 + ((256 + key) / SCREEN_WIDTH));
+
 	}
 
 	void togglePlayback() {
@@ -197,7 +208,7 @@ protected:
 		refreshDisplay = true;
 	}
 
-	//Helper functions - TODO: Move to a header file?
+	//Helper functions
 
 	static int indexToPitch(int index, int offset, int height) {
 		return 88 - height - index + offset - SCREEN_HEIGHT - 1;
@@ -221,11 +232,6 @@ protected:
 		float baseFreq = freqs[(pitch - 1) % 12];
 		int octave = (pitch - 1) / 12;
 		//Final frequency is the base frequency * 2^n, where n = octave
-		//Bitwise shifting works like this:
-		//1 << 1 = 00000001 = 1
-		//1 << 2 = 00000010 = 2
-		//1 << 3 = 00000100 = 4
-		//1 << 4 = 00001000 = 8 etc...
 		float freq = baseFreq * (1 << octave);
 
 		switch (waveType) {
