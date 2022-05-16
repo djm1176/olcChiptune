@@ -1,6 +1,4 @@
 #pragma once
-#ifndef OLCCHARACTERS_H
-#define OLCCHARACTERS_H
 
 #include "olcConsoleGameEngine.h"
 
@@ -86,6 +84,3 @@ namespace BoxDrawing {
 
 
 };
-
-
-#endif

@@ -272,7 +272,12 @@ public:
 	// Optional for clean up 
 	virtual bool OnUserDestroy();
 
-	// Event handling
+	/// <summary>
+	/// Called when focus in the console window changes.
+	/// </summary>
+	/// <param name="focused">True if the console is now in focus.</param>
+	virtual void OnFocusChanged(bool focused);
+
 	virtual void OnMouseMove(int x, int y);
 	virtual void OnMouseDown(int index);
 	virtual void OnMouseUp(int index);
@@ -341,10 +346,10 @@ protected: // Audio Engine =====================================================
 	void AudioThread();
 
 	// Overridden by user if they want to generate sound in real-time
-	virtual float onUserSoundSample(int nChannel, double fGlobalTime, float fTimeStep);
+	virtual float OnUserSoundSample(int nChannel, double fGlobalTime, float fTimeStep);
 
 	// Overridden by user if they want to manipulate the sound before it is played
-	virtual float onUserSoundFilter(int nChannel, double fGlobalTime, float fSample);
+	virtual float OnUserSoundFilter(int nChannel, double fGlobalTime, float fSample);
 
 	// The Sound Mixer - If the user wants to play many sounds simultaneously, and
 	// perhaps the same sound overlapping itself, then you need a mixer, which

@@ -3,8 +3,8 @@
 
 Window::Window(int x, int y, int w, int h) : x{ x }, y{ y }, w{ w }, h{ h } {}
 
-void Window::Draw(olcConsoleGameEngine* enginePtr) {
-	enginePtr->Fill(x, y, x + w, y + h);
+void Window::Draw(Chiptune* chiptunePtr) {
+	chiptunePtr->Fill(x, y, x + w, y + h);
 }
 
 void Window::setStyle(const Style* const style) {

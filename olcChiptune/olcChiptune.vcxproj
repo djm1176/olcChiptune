@@ -33,7 +33,9 @@
   <ItemGroup>
     <ClInclude Include="Beat.h" />
     <ClInclude Include="Characters.h" />
+    <ClInclude Include="Chiptune.h" />
     <ClInclude Include="Event.h" />
+    <ClInclude Include="Frequency.h" />
     <ClInclude Include="Note.h" />
     <ClInclude Include="olcConsoleGameEngine.h" />
     <ClInclude Include="Page.h" />

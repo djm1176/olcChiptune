@@ -604,18 +604,14 @@ void olcConsoleGameEngine::GameThread() {
 					if (m_keyNewState[i] & 0x8000) {
 						m_keys[i].bPressed = !m_keys[i].bHeld;
 						m_keys[i].bHeld = true;
+						OnKeyDown(i);
 					}
 					else {
 						m_keys[i].bReleased = true;
 						m_keys[i].bHeld = false;
+						OnKeyUp(i);
 					}
 				}
-
-				if (m_keyNewState[i] != m_keyOldState[i])
-					if (m_keyNewState)
-						OnKeyDown(i);
-					else
-						OnKeyUp(i);
 
 				m_keyOldState[i] = m_keyNewState[i];
 			}
@@ -634,6 +630,7 @@ void olcConsoleGameEngine::GameThread() {
 				case FOCUS_EVENT:
 				{
 					m_bConsoleInFocus = inBuf[i].Event.FocusEvent.bSetFocus;
+					OnFocusChanged(m_bConsoleInFocus);
 				}
 				break;
 
@@ -653,11 +650,6 @@ void olcConsoleGameEngine::GameThread() {
 						for (int m = 0; m < 5; m++) {
 							auto m_NewState = (inBuf[i].Event.MouseEvent.dwButtonState & (1 << m)) > 0;
 							m_mouseNewState[m] = m_NewState;
-
-							if (m_NewState)
-								OnMouseDown(m);
-							else
-								OnMouseUp(m);
 						}
 
 					}
@@ -683,10 +675,12 @@ void olcConsoleGameEngine::GameThread() {
 					if (m_mouseNewState[m]) {
 						m_mouse[m].bPressed = true;
 						m_mouse[m].bHeld = true;
+						OnMouseDown(m);
 					}
 					else {
 						m_mouse[m].bReleased = true;
 						m_mouse[m].bHeld = false;
+						OnMouseUp(m);
 					}
 				}
 
@@ -724,6 +718,8 @@ void olcConsoleGameEngine::GameThread() {
 }
 
 bool olcConsoleGameEngine::OnUserDestroy() { return true; }
+
+void olcConsoleGameEngine::OnFocusChanged(bool focused) {}
 
 void olcConsoleGameEngine::OnMouseMove(int x, int y) {}
 
@@ -948,11 +944,11 @@ void olcConsoleGameEngine::AudioThread() {
 	}
 }
 
-float olcConsoleGameEngine::onUserSoundSample(int nChannel, double fGlobalTime, float fTimeStep) {
+float olcConsoleGameEngine::OnUserSoundSample(int nChannel, double fGlobalTime, float fTimeStep) {
 	return 0.0f;
 }
 
-float olcConsoleGameEngine::onUserSoundFilter(int nChannel, double fGlobalTime, float fSample) {
+float olcConsoleGameEngine::OnUserSoundFilter(int nChannel, double fGlobalTime, float fSample) {
 	return fSample;
 }
 
@@ -975,10 +971,10 @@ float olcConsoleGameEngine::GetMixerOutput(int nChannel, double fGlobalTime, flo
 	listActiveSamples.remove_if([](const sCurrentlyPlayingSample& s) {return s.bFinished; });
 
 	// The users application might be generating sound, so grab that if it exists
-	fMixerSample += onUserSoundSample(nChannel, fGlobalTime, fTimeStep);
+	fMixerSample += OnUserSoundSample(nChannel, fGlobalTime, fTimeStep);
 
 	// Return the sample via an optional user override to filter the sound
-	return onUserSoundFilter(nChannel, fGlobalTime, fMixerSample);
+	return OnUserSoundFilter(nChannel, fGlobalTime, fMixerSample);
 }
 
 int olcConsoleGameEngine::GetMouseX() { return m_mousePosX; }
