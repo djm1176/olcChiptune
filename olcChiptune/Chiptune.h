@@ -1,6 +1,7 @@
 #pragma once
 #include "olcConsoleGameEngine.h"
 #include "Tune.h"
+#include "Window.h"
 
 class Chiptune : public olcConsoleGameEngine {
 public:

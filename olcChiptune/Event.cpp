@@ -1,10 +1,15 @@
 #include "Event.h"
 
-Event::Trigger::Trigger(bool triggerOnKeyDown, bool triggerOnKeyUp, bool triggerOnMouseDown, bool triggerOnMouseUp, bool triggerOnMouseMove, int mouseIndex, int key) :
-	triggerOnKeyDown{ triggerOnKeyDown },
-	triggerOnKeyUp{ triggerOnKeyUp },
-	triggerOnMouseDown{ triggerOnMouseDown },
-	triggerOnMouseUp{ triggerOnMouseUp },
-	triggerOnMouseMove{ triggerOnMouseMove },
+Event::Trigger::Trigger(State state, Context context, int mouseIndex, int key) :
+	state{ state },
+	context{ context },
 	mouseIndex{ mouseIndex },
 	key{ key } {}
+
+Event::Event(CallbackFunction function) {
+	m_Function = function;
+}
+
+void Event::AddTrigger(Trigger t) {
+	m_Triggers.push_back(t);
+}

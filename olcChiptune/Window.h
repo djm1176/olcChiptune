@@ -3,7 +3,8 @@
 #include <vector>
 #include "Style.h"
 #include "Event.h"
-#include "Chiptune.h"
+
+class Chiptune;
 
 class Window {
 public:
@@ -22,7 +23,14 @@ public:
 
 
 protected:
-	int x, y, w, h;
 
+	/// <summary>
+	/// Returns the bounds, in (x, y, w, h) of this Window
+	/// </summary>
+	/// <returns></returns>
+	std::tuple<int, int, int, int> GetRect();
+
+private:
+	int x, y, w, h;
 	std::vector<Event> m_Events;
 };

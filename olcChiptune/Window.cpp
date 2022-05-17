@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "olcConsoleGameEngine.h"
+#include "Chiptune.h"
 
 Window::Window(int x, int y, int w, int h) : x{ x }, y{ y }, w{ w }, h{ h } {}
 
@@ -39,4 +40,8 @@ void Window::setStyle(const Style* const style) {
 
 void Window::addCallback(Event evt) {
 	m_Events.push_back(evt);
+}
+
+std::tuple<int, int, int, int> Window::GetRect() {
+	return std::tuple<int, int, int, int>(x, y, w, h);
 }
