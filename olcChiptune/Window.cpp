@@ -33,15 +33,19 @@ void Window::OnKeyUp(int key) {
 
 }
 
-void Window::setStyle(const Style* const style) {
+void Window::SetStyle(const Style* const style) {
 	// TODO Update the style of how this window is drawn
 
 }
 
-void Window::addCallback(Event evt) {
+void Window::AddCallback(Event evt) {
 	m_Events.push_back(evt);
 }
 
 std::tuple<int, int, int, int> Window::GetRect() {
 	return std::tuple<int, int, int, int>(x, y, w, h);
+}
+
+const std::vector<Event> Window::GetEvents() {
+	return m_Events;
 }

@@ -1,39 +1,41 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 
 class Event {
-	struct Trigger {
-		enum State {OnKeyDown, OnKeyUp, OnMouseDown, OnMouseUp, OnMouseMove, OnFocus};
-		enum Context {Global, Focused};
+public:
+	enum State { OnKeyDown, OnKeyUp, OnMouseDown, OnMouseUp, OnMouseMove, OnMouseWheel, OnFocus };
+	enum Context { Global, Focused };
 
-		Trigger(State state, Context context, int mouseIndex = 0, int key = 0);
+	struct Trigger {
+		Trigger(State state, Context context, int mouseIndex = -1, int key = -1, int mouseWheel = 0);
 
 		//Member variables
 		State state;
 		Context context;
 		int mouseIndex;
+		int mouseWheel;
+		int mouseX, mouseY;
 		int key;
 	};
 
-public:
-
-	/// <summary>
-	/// Defines a FUNCTION to be called as a result of an event occurring
-	/// </summary>
-	typedef bool(*CallbackFunction)(int);
+	typedef std::function<void(Event)> Callback;
 
 	/// <summary>
 	/// Instantiate an Event that binds a function callback to one or more matching triggers
 	/// </summary>
 	/// <param name="func"></param>
 	/// <param name="..."></param>
-	Event(CallbackFunction func);
+	Event(Callback func);
 
 	void AddTrigger(Trigger trigger);
+	void Invoke(Event &evt);
+
+	const std::vector<Event::Trigger> GetTriggers();
 
 private:
 	std::vector<Event::Trigger> m_Triggers;
-	CallbackFunction m_Function;
+	Callback m_Callback;
 };
 

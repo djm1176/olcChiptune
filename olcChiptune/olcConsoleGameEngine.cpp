@@ -639,9 +639,23 @@ void olcConsoleGameEngine::GameThread() {
 					switch (inBuf[i].Event.MouseEvent.dwEventFlags) {
 					case MOUSE_MOVED:
 					{
-						m_mousePosX = inBuf[i].Event.MouseEvent.dwMousePosition.X;
-						m_mousePosY = inBuf[i].Event.MouseEvent.dwMousePosition.Y;
-						OnMouseMove(m_mousePosX, m_mousePosY);
+						int _x = inBuf[i].Event.MouseEvent.dwMousePosition.X;
+						int _y = inBuf[i].Event.MouseEvent.dwMousePosition.Y;
+						
+						if(m_mousePosX != _x && m_mousePosY != _y)
+							OnMouseMove(m_mousePosX, m_mousePosY);
+						
+						m_mousePosX = _x;
+						m_mousePosY = _y;
+						
+					}
+					break;
+
+					case MOUSE_WHEELED:
+					{
+						int dir = (int)inBuf[i].Event.MouseEvent.dwButtonState >> 16;
+
+						OnMouseWheel((dir > 0 ? 1 : -1));
 					}
 					break;
 
@@ -726,6 +740,8 @@ void olcConsoleGameEngine::OnMouseMove(int x, int y) {}
 void olcConsoleGameEngine::OnMouseDown(int index) {}
 
 void olcConsoleGameEngine::OnMouseUp(int index) {}
+
+void olcConsoleGameEngine::OnMouseWheel(int direction) {}
 
 void olcConsoleGameEngine::OnKeyDown(int key) {}
 

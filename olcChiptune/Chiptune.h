@@ -15,11 +15,16 @@ public:
 	virtual void OnMouseMove(int x, int y) override;
 	virtual void OnMouseDown(int index) override;
 	virtual void OnMouseUp(int index) override;
+	virtual void OnMouseWheel(int direction) override;
 	virtual void OnKeyDown(int key) override;
 	virtual void OnKeyUp(int key) override;
 
 
 protected:
+
+	//Process a UI event (mouse/keyboard)
+	//TODO handle this in a UI manager
+	void ProcessEvent(Event e);
 
 	struct PlayState {
 		int m_beatOffset = 0; // The current beat, by the smallest subdivision

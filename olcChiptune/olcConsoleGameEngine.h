@@ -281,6 +281,7 @@ public:
 	virtual void OnMouseMove(int x, int y);
 	virtual void OnMouseDown(int index);
 	virtual void OnMouseUp(int index);
+	virtual void OnMouseWheel(int direction);
 	virtual void OnKeyDown(int key);
 	virtual void OnKeyUp(int key);
 

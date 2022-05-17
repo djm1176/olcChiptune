@@ -18,8 +18,9 @@ public:
 	void OnKeyDown(int key);
 	void OnKeyUp(int key);
 
-	void setStyle(const Style* const style);
-	void addCallback(Event evt);
+	void SetStyle(const Style* const style);
+	void AddCallback(Event evt);
+	const std::vector<Event> GetEvents();
 
 
 protected:
@@ -29,6 +30,7 @@ protected:
 	/// </summary>
 	/// <returns></returns>
 	std::tuple<int, int, int, int> GetRect();
+
 
 private:
 	int x, y, w, h;

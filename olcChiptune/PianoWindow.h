@@ -13,7 +13,7 @@ public:
 
 	void Draw(Chiptune* chiptunePtr) override;
 
-	bool IncrementVerticalOffset(int amount);
+	void IncrementVerticalOffset(Event evt);
 
 private:
 
