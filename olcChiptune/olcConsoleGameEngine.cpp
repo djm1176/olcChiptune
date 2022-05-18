@@ -993,6 +993,8 @@ float olcConsoleGameEngine::GetMixerOutput(int nChannel, double fGlobalTime, flo
 	return OnUserSoundFilter(nChannel, fGlobalTime, fMixerSample);
 }
 
+olcConsoleGameEngine::sKeyState olcConsoleGameEngine::GetKey(int nKeyID) { return m_keys[nKeyID]; }
+
 int olcConsoleGameEngine::GetMouseX() { return m_mousePosX; }
 
 int olcConsoleGameEngine::GetMouseY() { return m_mousePosY; }

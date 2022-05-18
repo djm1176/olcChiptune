@@ -4,12 +4,11 @@
 #include "Frequency.h"
 #include "PianoWindow.h"
 
-
 // Inherited via olcConsoleGameEngine
 bool Chiptune::OnUserCreate() {
 
 	//Initialize windows
-	Window* pianoWindow = new PianoWindow(0, 0, 10, 16);
+	Window* pianoWindow = new PianoWindow(0, 0, 64, 24);
 
 	//Add windows to the vector
 	m_Windows.push_back(pianoWindow);
@@ -33,7 +32,7 @@ bool Chiptune::OnUserUpdate(float fElapsedTime) {
 
 	// Handle drawing of windows as necessary
 	for (Window* window : m_Windows) {
-		window->Draw(this);
+		window->Render(*this);
 	}
 
 	return true;
@@ -43,30 +42,34 @@ void Chiptune::OnMouseMove(int x, int y) {
 	//Reuse Event to carry the UI interaction to a generalized compare
 	//TODO We shouldn't reuse: this should be its own class
 	Event e(nullptr);
-	auto t = Event::Trigger(Event::State::OnMouseMove, Event::Context::Global, -1, -1);
+	auto t = Event::Trigger(Event::State::OnMouseMove, Event::Context::Global, Event::KeyModifiers::None, -1, -1);
 	t.mouseX = x;
 	t.mouseY = y;
+	t.SetKeyModifiers(GetKey(VK_CONTROL).bHeld, GetKey(VK_SHIFT).bHeld, GetKey(VK_MENU).bHeld);
 	e.AddTrigger(t);
 	ProcessEvent(e);
 }
 
 void Chiptune::OnMouseDown(int index) {
 	Event e(nullptr);
-	auto t = Event::Trigger(Event::State::OnMouseDown, Event::Context::Global, index, -1);
+	auto t = Event::Trigger(Event::State::OnMouseDown, Event::Context::Global, Event::KeyModifiers::None, index, -1);
+	t.SetKeyModifiers(GetKey(VK_CONTROL).bHeld, GetKey(VK_SHIFT).bHeld, GetKey(VK_MENU).bHeld);
 	e.AddTrigger(t);
 	ProcessEvent(e);
 }
 
 void Chiptune::OnMouseUp(int index) {
 	Event e(nullptr);
-	auto t = Event::Trigger(Event::State::OnMouseUp, Event::Context::Global, index, -1);
+	auto t = Event::Trigger(Event::State::OnMouseUp, Event::Context::Global, Event::KeyModifiers::None, index, -1);
+	t.SetKeyModifiers(GetKey(VK_CONTROL).bHeld, GetKey(VK_SHIFT).bHeld, GetKey(VK_MENU).bHeld);
 	e.AddTrigger(t);
 	ProcessEvent(e);
 }
 
 void Chiptune::OnMouseWheel(int direction) {
 	Event e(nullptr);
-	auto t = Event::Trigger(Event::State::OnMouseWheel, Event::Context::Global, -1, -1);
+	auto t = Event::Trigger(Event::State::OnMouseWheel, Event::Context::Global, Event::KeyModifiers::None, -1, -1);
+	t.SetKeyModifiers(GetKey(VK_CONTROL).bHeld, GetKey(VK_SHIFT).bHeld, GetKey(VK_MENU).bHeld);
 	t.mouseWheel = direction;
 	e.AddTrigger(t);
 	ProcessEvent(e);
@@ -74,14 +77,16 @@ void Chiptune::OnMouseWheel(int direction) {
 
 void Chiptune::OnKeyDown(int key) {
 	Event e(nullptr);
-	auto t = Event::Trigger(Event::State::OnKeyDown, Event::Context::Global, -1, key);
+	auto t = Event::Trigger(Event::State::OnKeyDown, Event::Context::Global, Event::KeyModifiers::None, -1, key);
+	t.SetKeyModifiers(GetKey(VK_CONTROL).bHeld, GetKey(VK_SHIFT).bHeld, GetKey(VK_MENU).bHeld);
 	e.AddTrigger(t);
 	ProcessEvent(e);
 }
 
 void Chiptune::OnKeyUp(int key) {
 	Event e(nullptr);
-	auto t = Event::Trigger(Event::State::OnKeyUp, Event::Context::Global, -1, key);
+	auto t = Event::Trigger(Event::State::OnKeyUp, Event::Context::Global, Event::KeyModifiers::None, -1, key);
+	t.SetKeyModifiers(GetKey(VK_CONTROL).bHeld, GetKey(VK_SHIFT).bHeld, GetKey(VK_MENU).bHeld);
 	e.AddTrigger(t);
 	ProcessEvent(e);
 }
@@ -98,9 +103,10 @@ void Chiptune::ProcessEvent(Event evt) {
 					//This context one works as long as there's only these 2 values (Global and Focused)
 					if (t2.context == Event::Context::Global && t1.context == Event::Context::Focused) continue;
 					if (t2.state != t1.state) continue;
+					if (t2.keyModifiers != t1.keyModifiers) continue;
 					if (t2.key != t1.key && t1.key != -1) continue;
 					if (t2.mouseIndex != t1.mouseIndex && t1.mouseIndex != -1) continue;
-					if (t2.mouseWheel != t1.mouseWheel) continue;
+					if (t2.mouseWheel != t1.mouseWheel && t1.mouseWheel != 0) continue;
 
 					// Trigger
 					e.Invoke(evt);
@@ -118,7 +124,7 @@ int main() {
 
 	Chiptune game;
 
-	game.ConstructConsole(Chiptune::SCREEN_WIDTH, Chiptune::SCREEN_HEIGHT, 10, 14);
+	game.ConstructConsole(Chiptune::SCREEN_WIDTH, Chiptune::SCREEN_HEIGHT, 7, 15);
 	game.Start();
 
 	return 0;

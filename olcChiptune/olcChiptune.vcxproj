@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Beat.cpp" />
+    <ClCompile Include="Characters.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Note.cpp" />
     <ClCompile Include="olcConsoleGameEngine.cpp" />

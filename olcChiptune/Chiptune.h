@@ -5,7 +5,7 @@
 
 class Chiptune : public olcConsoleGameEngine {
 public:
-	static const int SCREEN_WIDTH = 128;
+	static const int SCREEN_WIDTH = 192;
 	static const int SCREEN_HEIGHT = 48;
 
 	virtual bool OnUserCreate() override;
