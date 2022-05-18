@@ -1,5 +1,6 @@
 #include "Tune.h"
-
+#include "Page.h"
+#include "Beat.h"
 
 Tune::Tune() : pages{ std::vector<Page>(DEFAULT_PAGE_COUNT) }, tempo{ DEFAULT_TEMPO }, playhead{ 0 }, name{ L"Untitled" }{}
 

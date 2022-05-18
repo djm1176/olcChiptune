@@ -1,7 +1,10 @@
 #pragma once
-#include "olcConsoleGameEngine.h"
-#include "Tune.h"
-#include "Window.h"
+#include "olcConsoleGameEngine.h" // Required for inheritance
+
+class Window;
+class Tune;
+class Event;
+class DebugWindow;
 
 class Chiptune : public olcConsoleGameEngine {
 public:
@@ -18,6 +21,8 @@ public:
 	virtual void OnMouseWheel(int direction) override;
 	virtual void OnKeyDown(int key) override;
 	virtual void OnKeyUp(int key) override;
+
+	static DebugWindow& Debugger();
 
 
 protected:

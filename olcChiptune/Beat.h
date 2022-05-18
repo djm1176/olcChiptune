@@ -1,7 +1,6 @@
 #pragma once
-
-#include "Note.h"
 #include <vector>
+#include "Note.h" // Required complete type for vector
 
 class Beat {
 public:

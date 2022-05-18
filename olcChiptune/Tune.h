@@ -2,7 +2,8 @@
 
 #include <string>
 #include <vector>
-#include "Page.h"
+
+class Page;
 
 class Tune {
 public:

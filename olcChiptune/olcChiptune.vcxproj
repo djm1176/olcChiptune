@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Beat.cpp" />
     <ClCompile Include="Characters.cpp" />
+    <ClCompile Include="DebugWindow.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Note.cpp" />
     <ClCompile Include="olcConsoleGameEngine.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="Beat.h" />
     <ClInclude Include="Characters.h" />
     <ClInclude Include="Chiptune.h" />
+    <ClInclude Include="DebugWindow.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Frequency.h" />
     <ClInclude Include="Helpers.h" />

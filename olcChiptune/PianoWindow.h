@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Window.h"
+#include "Window.h" // Required for inheritance
 
 class Event;
 
@@ -19,11 +19,16 @@ public:
 	//UI Events
 	void IncrementVerticalOffset(Event evt);
 	void IncrementHorizontalZoom(Event evt);
+	void MoveCursor(Event e);
+
+protected:
+	int pitchRows();
 
 private:
 
 	/// <summary>
-	/// Position of the cursor, i.e. which note space is highlighted
+	/// Position of the cursor, i.e. which note space is highlighted in Piano Roll space.
+	/// In other words, the bottom-left most position is (0, 0), NOT (x, y + h).
 	/// </summary>
 	int m_CursorX, m_CursorY;
 
@@ -36,6 +41,11 @@ private:
 	/// The offset in time intervals to display, starting on the left-most side of the piano roll
 	/// </summary>
 	int m_HorizontalOffset;
+
+	/// <summary>
+	/// The offset in pages to start displaying.
+	/// </summary>
+	int m_PageOffset;
 
 	/// <summary>
 	/// The amount to zoom horizontally (time domain) by.

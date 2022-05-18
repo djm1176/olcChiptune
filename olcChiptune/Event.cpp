@@ -34,6 +34,6 @@ void Event::Trigger::SetKeyModifiers(bool ctrl, bool shift, bool alt) {
 		keyModifiers |= KeyModifiers::Alt;
 }
 
-const std::vector<Event::Trigger> Event::GetTriggers() {
+const std::vector<Event::Trigger>& Event::GetTriggers() {
 	return m_Triggers;
 }

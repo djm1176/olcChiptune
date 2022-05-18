@@ -1,18 +1,21 @@
 #include <queue>
 #include <string>
 #include "Chiptune.h"
+#include "Window.h"
+#include "Event.h"
+#include "Tune.h"
 #include "Frequency.h"
 #include "PianoWindow.h"
+#include "DebugWindow.h"
 
 // Inherited via olcConsoleGameEngine
 bool Chiptune::OnUserCreate() {
 
 	//Initialize windows
 	Window* pianoWindow = new PianoWindow(0, 0, 64, 24);
-
 	//Add windows to the vector
 	m_Windows.push_back(pianoWindow);
-
+	m_Windows.push_back(&Debugger());
 
 	EnableSound();
 	currentTune = new Tune();
@@ -89,6 +92,11 @@ void Chiptune::OnKeyUp(int key) {
 	t.SetKeyModifiers(GetKey(VK_CONTROL).bHeld, GetKey(VK_SHIFT).bHeld, GetKey(VK_MENU).bHeld);
 	e.AddTrigger(t);
 	ProcessEvent(e);
+}
+
+DebugWindow& Chiptune::Debugger() {
+	static DebugWindow debugWindow = DebugWindow(0, SCREEN_HEIGHT - 6, SCREEN_WIDTH, 6);
+	return debugWindow;
 }
 
 void Chiptune::ProcessEvent(Event evt) {

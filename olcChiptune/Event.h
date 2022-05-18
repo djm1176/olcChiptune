@@ -40,9 +40,9 @@ public:
 	Event(Callback func);
 
 	void AddTrigger(Trigger trigger);
-	void Invoke(Event &evt);
+	void Invoke(Event& evt);
 
-	const std::vector<Event::Trigger> GetTriggers();
+	const std::vector<Event::Trigger>& GetTriggers();
 
 private:
 	std::vector<Event::Trigger> m_Triggers;

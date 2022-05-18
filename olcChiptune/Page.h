@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Beat.h"
 #include <vector>
+
+class Beat;
 
 class Page {
 public:

@@ -2,7 +2,8 @@
 
 class olcConsoleGameEngine;
 
-namespace BoxDrawing {
+class BoxDrawing {
+public:
 	typedef short ConsoleColor;
 
 	ConsoleColor Black = 0;
@@ -22,36 +23,36 @@ namespace BoxDrawing {
 	ConsoleColor LightYellow = 14;
 	ConsoleColor BrightWhite = 15;
 
-	enum BoxType { Line, Pipe };
-	const int BOXDRAWINGS_START = 9472;
+	enum class BoxType { Line, Pipe };
+	static const int BOXDRAWINGS_START = 9472;
 
-	const wchar_t LINE_HORIZONTAL = BOXDRAWINGS_START + 0;
-	const wchar_t LINE_VERTICAL = BOXDRAWINGS_START + 2;
-	const wchar_t LINE_TOPLEFT = BOXDRAWINGS_START + 12;
-	const wchar_t LINE_TOPRIGHT = BOXDRAWINGS_START + 16;
-	const wchar_t LINE_BOTLEFT = BOXDRAWINGS_START + 20;
-	const wchar_t LINE_BOTRIGHT = BOXDRAWINGS_START + 24;
-	const wchar_t LINE_MIDLEFT = BOXDRAWINGS_START + 28;
-	const wchar_t LINE_MIDRIGHT = BOXDRAWINGS_START + 36;
-	const wchar_t LINE_TOPMID = BOXDRAWINGS_START + 44;
-	const wchar_t LINE_BOTMID = BOXDRAWINGS_START + 52;
-	const wchar_t LINE_MIDMID = BOXDRAWINGS_START + 52;
+	static const wchar_t LINE_HORIZONTAL = BOXDRAWINGS_START + 0;
+	static const wchar_t LINE_VERTICAL = BOXDRAWINGS_START + 2;
+	static const wchar_t LINE_TOPLEFT = BOXDRAWINGS_START + 12;
+	static const wchar_t LINE_TOPRIGHT = BOXDRAWINGS_START + 16;
+	static const wchar_t LINE_BOTLEFT = BOXDRAWINGS_START + 20;
+	static const wchar_t LINE_BOTRIGHT = BOXDRAWINGS_START + 24;
+	static const wchar_t LINE_MIDLEFT = BOXDRAWINGS_START + 28;
+	static const wchar_t LINE_MIDRIGHT = BOXDRAWINGS_START + 36;
+	static const wchar_t LINE_TOPMID = BOXDRAWINGS_START + 44;
+	static const wchar_t LINE_BOTMID = BOXDRAWINGS_START + 52;
+	static const wchar_t LINE_MIDMID = BOXDRAWINGS_START + 52;
 
 
-	const wchar_t PIPE_HORIZONTAL = BOXDRAWINGS_START + 80;
-	const wchar_t PIPE_VERTICAL = BOXDRAWINGS_START + 81;
-	const wchar_t PIPE_TOPLEFT = BOXDRAWINGS_START + 84;
-	const wchar_t PIPE_TOPRIGHT = BOXDRAWINGS_START + 87;
-	const wchar_t PIPE_BOTLEFT = BOXDRAWINGS_START + 90;
-	const wchar_t PIPE_BOTRIGHT = BOXDRAWINGS_START + 93;
-	const wchar_t PIPE_MIDLEFT = BOXDRAWINGS_START + 96;
-	const wchar_t PIPE_MIDRIGHT = BOXDRAWINGS_START + 99;
-	const wchar_t PIPE_TOPMID = BOXDRAWINGS_START + 102;
-	const wchar_t PIPE_BOTMID = BOXDRAWINGS_START + 105;
-	const wchar_t PIPE_MIDMID = BOXDRAWINGS_START + 108;
+	static const wchar_t PIPE_HORIZONTAL = BOXDRAWINGS_START + 80;
+	static const wchar_t PIPE_VERTICAL = BOXDRAWINGS_START + 81;
+	static const wchar_t PIPE_TOPLEFT = BOXDRAWINGS_START + 84;
+	static const wchar_t PIPE_TOPRIGHT = BOXDRAWINGS_START + 87;
+	static const wchar_t PIPE_BOTLEFT = BOXDRAWINGS_START + 90;
+	static const wchar_t PIPE_BOTRIGHT = BOXDRAWINGS_START + 93;
+	static const wchar_t PIPE_MIDLEFT = BOXDRAWINGS_START + 96;
+	static const wchar_t PIPE_MIDRIGHT = BOXDRAWINGS_START + 99;
+	static const wchar_t PIPE_TOPMID = BOXDRAWINGS_START + 102;
+	static const wchar_t PIPE_BOTMID = BOXDRAWINGS_START + 105;
+	static const wchar_t PIPE_MIDMID = BOXDRAWINGS_START + 108;
 
-	void DrawBox(olcConsoleGameEngine& targetGraphic, int x1, int y1, int x2, int y2, BoxType type = Line, short col = 15);
+	static void DrawBox(olcConsoleGameEngine& targetGraphic, int x1, int y1, int x2, int y2, BoxType type = BoxType::Line, short col = 15);
 
-	void DrawSolidBox(olcConsoleGameEngine& targetGraphic, int x1, int y1, int x2, int y2, short c = 9608, short col = 15);
+	static void DrawSolidBox(olcConsoleGameEngine& targetGraphic, int x1, int y1, int x2, int y2, short c = 9608, short col = 15);
 
 };

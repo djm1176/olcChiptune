@@ -33,8 +33,8 @@ namespace Frequency {
 	static std::wstring pitchToWstring(int pitch, bool concat_octave = false) {
 		static std::wstring PITCH_FLATS[]{ L"A ", L"Bb", L"B ", L"C ", L"Db", L"D ", L"Eb", L"E ", L"F ", L"Gb", L"G ", L"Ab" };
 		if (concat_octave)
-			return PITCH_FLATS[(pitch - 1) % 12] + std::to_wstring(pitch / 12);
+			return PITCH_FLATS[pitch % 12] + std::to_wstring(pitch / 12);
 		else
-			return PITCH_FLATS[(pitch - 1) % 12];
+			return PITCH_FLATS[pitch % 12];
 	}
 }

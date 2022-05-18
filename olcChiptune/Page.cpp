@@ -1,6 +1,5 @@
-#include "Beat.h"
 #include "Page.h"
-#include <cassert>
+#include "Beat.h"
 
 Page::Page() : beats{ std::vector<Beat>(PAGE_BEATS) } {}
 
